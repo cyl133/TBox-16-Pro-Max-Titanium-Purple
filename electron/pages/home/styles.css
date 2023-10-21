@@ -103,16 +103,3 @@ body {
   width: 35px;
   height: 35px;
 }
-
-.icon-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  display: flex;
-  /* Use flexbox for centering */
-  justify-content: center;
-  /* Center horizontally */
-  align-items: center;
-  /* Center vertically */
-}

@@ -4,6 +4,7 @@
 <head>
   <title>Settings</title>
   <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="../styles.css">
 </head>
 
 <body>
@@ -27,57 +28,13 @@
     </button> -->
     <!-- "Settings" button -->
     <!-- <div class="button"> -->
+    <a href="../../index.html" class="button">
+      <img src="../../assets/icon/bottombar/issue.svg" alt="Issue" class="button-icon" />
+    </a>
     <a href="./index.html" class="button">
-      <img src="./assets/icon/bottombar/issue.svg" alt="Issue" class="button-icon" />
-    </a>
-    <a href="./pages/settings/index.html" class="button">
-      <img src="./assets/icon/bottombar/settings.svg" alt="Settings" class="button-icon" />
+      <img src="../../assets/icon/bottombar/settings.svg" alt="Settings" class="button-icon" />
     </a>
 
-    <!-- </div> -->
-    <!-- <button id="loadSettingsPage" class="button"
-      onclick="window.location.href('/Users/sean/Coding/HackHarvard2023/electron/pages/settings/index.html')">
-      <img src="./assets/icon/bottombar/settings.svg" alt="Settings" class="button-icon" />
-    </button> -->
-
-    <script>
-      function toggleIconColor(buttonId) {
-        // Get references to the buttons and the icon
-        const loadHomePage = document.getElementById("loadHomePage");
-        const loadSettingsPage = document.getElementById("loadSettingsPage");
-        const icon = document.getElementById("icon");
-
-        // Toggle the color of the icon
-        if (icon.style.color === "" || icon.style.color === "red") {
-          icon.style.color = "blue"; // Change the color to blue
-        } else {
-          icon.style.color = "red"; // Change the color to red
-        }
-      }
-
-
-      function toggleUnderline(buttonId) {
-        // Get references to the buttons
-        const loadHomePage = document.getElementById("loadHomePage");
-        const loadSettingsPage = document.getElementById("loadSettingsPage");
-
-        // Remove underline from both buttons
-        loadHomePage.classList.remove("underline");
-        loadSettingsPage.classList.remove("underline");
-
-        // Add underline to the clicked button
-        const clickedButton = document.getElementById(buttonId);
-        clickedButton.classList.add("underline");
-      }
-
-      function switchScreen() {
-        ipcRenderer.send('switchScreen');
-      }
-
-      function switchBack() {
-        ipcRenderer.send('switchBack');
-      }
-    </script>
     <script src="renderer.js"></script>
   </div>
 </body>
