@@ -2,11 +2,15 @@ import logging
 import flask
 from flask import request
 from terra.base_client import Terra
+import os
+import dotenv
+
+dotenv.load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger("app")
 
-terra = Terra(api_key='API-KEY', dev_id='DEV-ID', secret="SIGNING-SECRET")
+terra = Terra(api_key=os.getenv("TERRA_API_KEY"), dev_id=os.getenv('DEV_ID'), secret=os.getenv('TERRA_SECRET'))
 
 app = flask.Flask(__name__)
 
@@ -14,6 +18,7 @@ app = flask.Flask(__name__)
 def consume_terra_webhook() -> flask.Response:
     # body_str = str(request.get_data(), 'utf-8')
     body = request.get_json()
+    print(body)
     _LOGGER.info(
         "Received webhook for user %s of type %s",
         body.get("user", {}).get("user_id"),
