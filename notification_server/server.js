@@ -3,6 +3,9 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import fetch from 'node-fetch'; // No need for dynamic import with ESM
 import {spawn} from "child_process";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const port = 3000;
@@ -29,7 +32,8 @@ function resetCheckinTimer(newInterval = checkinInterval) {
         clearTimeout(checkinTimer); // Clear the existing timer
     }
 
-    checkinInterval = newInterval; // Update the interval if a new one is provided
+     // Update the interval if a new one is provided
+    checkinInterval = newInterval;
 
     // Set the next check-in time
     nextCheckinTime = Date.now() + checkinInterval;
@@ -67,9 +71,16 @@ app.get('/checkin-time-remaining', (req, res) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 let issues = []; // In-memory store for issues
 
-async function getIssuesFromRepo(owner, repo) {
+async function getIssuesFromRepo(owner, repo, token) {
     const url = `https://api.github.com/repos/${owner}/${repo}/issues?state=open`;
-    const response = await fetch(url);
+
+    // Include the token in the request headers
+    const headers = {
+        'Authorization': `token ${token}`,
+        'User-Agent': 'request',  // 'User-Agent' header is often required by the GitHub API, you can put anything here
+    };
+
+    const response = await fetch(url, { headers });
     const data = await response.json();
 
     // If the response includes an error, throw it
@@ -79,7 +90,6 @@ async function getIssuesFromRepo(owner, repo) {
 
     return data;
 }
-
 async function addIssueToSystem(issue) {
     // Assuming the issue contains the properties 'title', 'number', and 'state'
     const newIssue = {
@@ -88,17 +98,17 @@ async function addIssueToSystem(issue) {
         issue_state: issue.state,
         // Add more fields as needed, and initialize your timer properties
         is_timer_on: false,
-        remainingTime: 0, // or a default time if you prefer
+        originalTime: 1000 * 60 * 5, // Defaulting to 5 minutes
+        remainingTime: 1000 * 60 * 5, // Defaulting to 5 minutes
+        startTime: null,
         timer: null,
-        // ... any other properties needed for your timer
     };
-
     issues.push(newIssue); // Adds the new issue to the in-memory store
 }
 
-async function importIssuesToSystem(owner, repo) {
+async function importIssuesToSystem(owner, repo, token) {
     try {
-        const issuesFromRepo = await getIssuesFromRepo(owner, repo);
+        const issuesFromRepo = await getIssuesFromRepo(owner, repo, token);
 
         for (const issue of issuesFromRepo) {
             await addIssueToSystem(issue);
@@ -109,13 +119,6 @@ async function importIssuesToSystem(owner, repo) {
         console.error('Error importing issues:', error);
     }
 }
-
-// Endpoint to view issues stored in memory
-app.get('/get_issues', (req, res) => {
-    res.json(issues);
-});
-
-
 
 // Helper functions for timer management
 
@@ -270,6 +273,15 @@ app.post('/webhook', (req, res) => {
         // Define stress here as a placeholder. You might want to determine the stress level based on certain conditions.
         let stressLevel = 'medium stress'; // Adjust this based on your logic or data
 
+        //add the new inssue to local database
+        addIssueToSystem(data.issue)
+            .then(() => {
+                console.log('Issue was added to the system successfully.');
+            })
+            .catch((error) => {
+                console.error('Failed to add issue to the system:', error);
+            });
+
         const pythonProcess = spawn('python3', ['../utils/packaged_python_prediction.py', data.issue.title, data.issue.body, stressLevel]);
 
         // Listen for data from the Python script's standard output.
@@ -292,6 +304,9 @@ app.post('/webhook', (req, res) => {
 
 // Start the server and import issues
 app.listen(port, () => {
+    const token = process.env.GITHUB_TOKEN;
+    console.log(token);
     console.log(`Server started on http://localhost:${port}`);
-    importIssuesToSystem('bitcoin', 'bitcoin');
+    importIssuesToSystem('cyl133', 'HackHarvard2023', token);
+    resetCheckinTimer();
 });
