@@ -248,6 +248,28 @@ app.post('/start_timer', (req, res) => {
     }
 });
 
+// Middleware to parse JSON payloads
+app.use(express.json());
+
+// POST route for GitHub webhooks
+app.post('/webhook', (req, res) => {
+    // Respond that the webhook was received successfully
+    res.status(202).send('Accepted');
+
+    // Determine the type of event from GitHub
+    const githubEvent = req.headers['x-github-event'];
+    const action = req.body.action;
+    const data = req.body;
+
+    // Handle different events and actions accordingly
+    if (githubEvent === 'issues') {
+        if (action === 'opened') {
+            console.log(`An issue was opened with this title: ${data.issue.title}`);
+        }
+    }
+});
+
+
 // Start the server and import issues
 app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);
