@@ -2,6 +2,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import fetch from 'node-fetch'; // No need for dynamic import with ESM
+import {spawn} from "child_process";
 
 const app = express();
 const port = 3000;
@@ -258,17 +259,36 @@ app.post('/webhook', (req, res) => {
 
     // Determine the type of event from GitHub
     const githubEvent = req.headers['x-github-event'];
+    const body = req.body;
     const action = req.body.action;
     const data = req.body;
 
     // Handle different events and actions accordingly
-    if (githubEvent === 'issues') {
-        if (action === 'opened') {
-            console.log(`An issue was opened with this title: ${data.issue.title}`);
-        }
+    if (githubEvent === 'issues' && action === 'opened') {
+        console.log(`An issue was opened with this title: ${data.issue.title}`);
+
+        // Define stress here as a placeholder. You might want to determine the stress level based on certain conditions.
+        let stressLevel = 'medium stress'; // Adjust this based on your logic or data
+
+        const pythonProcess = spawn('python3', ['../utils/packaged_python_prediction.py', data.issue.title, data.issue.body, stressLevel]);
+
+        // Listen for data from the Python script's standard output.
+        pythonProcess.stdout.on('data', (data) => {
+            console.log(`Python Output: ${data}`);
+            //TODO: send this data to FE endpoing
+        });
+
+        // Listen for error output from the Python script
+        pythonProcess.stderr.on('data', (data) => {
+            console.error(`Python Error: ${data}`);
+        });
+
+        // Handle the closing of the Python process.
+        pythonProcess.on('close', (code) => {
+            console.log(`Python script process exited with code ${code}`);
+        });
     }
 });
-
 
 // Start the server and import issues
 app.listen(port, () => {
