@@ -161,3 +161,4 @@ cython_debug/
 
 /package-lock.json
 /node_modules/
+/electron/node_modules

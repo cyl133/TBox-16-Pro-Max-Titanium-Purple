@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Settings</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="../styles.css">
+</head>
+
+<body>
+  <h1>Settings</h1>
+  <form id="settings-form">
+    <label for="scheduled-time">Scheduled Time:</label>
+    <input type="time" id="scheduled-time" name="scheduled-time">
+
+    <button type="button" id="save-button">Save Settings</button>
+  </form>
+
+  <p id="status-message"></p>
+
+  <script src="index.js"></script>
+  <div class="bottom-bar">
+    <!-- "Issues" button -->
+
+
+    <!-- <button id="loadHomePage" class="button" onclick="loadPage('./index.html')">
+      <img src="./assets/icon/bottombar/issue.svg" alt="Issues" class="button-icon" />
+    </button> -->
+    <!-- "Settings" button -->
+    <!-- <div class="button"> -->
+    <a href="../../index.html" class="button">
+      <img src="../../assets/icon/bottombar/issue.svg" alt="Issue" class="button-icon" />
+    </a>
+    <a href="./index.html" class="button">
+      <img src="../../assets/icon/bottombar/settings.svg" alt="Settings" class="button-icon" />
+    </a>
+
+    <script src="renderer.js"></script>
+  </div>
+</body>
+
+</html>
