@@ -102,6 +102,7 @@ async function addIssueToSystem(issue) {
         remainingTime: 1000 * 60 * 5, // Defaulting to 5 minutes
         startTime: null,
         timer: null,
+        difficulty: issue.difficulty
     };
     issues.push(newIssue); // Adds the new issue to the in-memory store
 }
@@ -270,37 +271,28 @@ app.post('/webhook', (req, res) => {
     if (githubEvent === 'issues' && action === 'opened') {
         console.log(`An issue was opened with this title: ${data.issue.title}`);
 
-        // Define stress here as a placeholder. You might want to determine the stress level based on certain conditions.
-        let stressLevel = 'medium stress'; // Adjust this based on your logic or data
-
-        //add the new inssue to local database
-        addIssueToSystem(data.issue)
-            .then(() => {
-                console.log('Issue was added to the system successfully.');
-            })
-            .catch((error) => {
-                console.error('Failed to add issue to the system:', error);
-            });
+        let stressLevel = 'medium stress'; //TODO: get this from Terra API
 
         const pythonProcess = spawn('python3', ['../utils/packaged_python_prediction.py', data.issue.title, data.issue.body, stressLevel]);
 
         // Listen for data from the Python script's standard output.
-        pythonProcess.stdout.on('data', (data) => {
-            console.log(`Python Output: ${data}`);
-            //TODO: send this data to FE endpoing
-        });
-
-        // Listen for error output from the Python script
-        pythonProcess.stderr.on('data', (data) => {
-            console.error(`Python Error: ${data}`);
-        });
-
-        // Handle the closing of the Python process.
-        pythonProcess.on('close', (code) => {
-            console.log(`Python script process exited with code ${code}`);
+        pythonProcess.stdout.on('data', (output) => {
+            console.log(`Python Output: ${output}`);
+            //TODO: send this data to FE endpoint
+                //add the new inssue to local database
+                data.issue.difficulty = output;
+                addIssueToSystem(data.issue)
+                    .then(() => {
+                        console.log('Issue was added to the system successfully.');
+                    })
+                    .catch((error) => {
+                        console.error('Failed to add issue to the system:', error);
+                    });
         });
     }
 });
+
+//TODO: add in a POST route for changing the difficulty level of an issue
 
 // Start the server and import issues
 app.listen(port, () => {
