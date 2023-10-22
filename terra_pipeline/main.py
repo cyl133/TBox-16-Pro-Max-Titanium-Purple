@@ -7,6 +7,7 @@ import dotenv
 from call_webhook import get_new_info
 import json
 from ml.pipeline import run_ml_pipeline
+from issue_puller.github import github_time_taken
 
 dotenv.load_dotenv()
 
@@ -56,6 +57,23 @@ def run_ml_model():
         _LOGGER.error(f"Error running ML model: {e}")
         return flask.Response(status=500, response="Internal Server Error")
     
+@app.route("/averageTaskTime", methods=["GET"])
+def average_task_time():
+    owner = request.args.get('owner')
+    repository = request.args.get('repository')
+
+    if not owner or not repository:
+        return flask.jsonify({"error": "Owner and repository parameters are required"}), 400
+    
+    try:
+        # Fetching task durations based on owner and repository (replace with actual logic)
+        durations = github_time_taken(repository, owner)
+        return flask.jsonify(durations)
+    except Exception as e:
+        _LOGGER.error(f"Error calculating average task time for {owner}/{repository}: {e}")
+        return flask.Response(status=500, response="Internal Server Error")
+
+
     
 if __name__ == "__main__":
     app.run(host="localhost", port=9100)
