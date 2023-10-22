@@ -46,7 +46,7 @@ def processed_datum(datapoint):
 
 def get_rolling_avg(data):
     df = pd.DataFrame(data, columns=columns)
-    df['Time'] = df['Time']/60
+    df['Time'] = df['Time']
     df.sort_values(by='Time', ascending=False, inplace=True)
     top_third = int(0.33 * len(df))
     next_third = int(0.66 * len(df))

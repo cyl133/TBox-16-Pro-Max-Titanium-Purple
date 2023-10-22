@@ -12,7 +12,8 @@ dotenv.config();
 
 const app = express();
 const port = 3000;
-
+const owner = 'cyl133';
+const repo = 'HackHarvard2023';
 // Middleware to parse JSON payloads
 app.use(express.json());
 
@@ -119,7 +120,7 @@ async function addIssueToSystem(issue) {
 async function importIssuesToSystem(owner, repo, token) {
     try {
         const issuesFromRepo = await getIssuesFromRepo(owner, repo, token);
-        const response = await axios.get('http://localhost:9100/runMLPipeline');
+        const response = await axios.get('http://localhost:8080/runMLPipeline');
         const stressLevel = response.data.stress;
         for (const issue of issuesFromRepo) {
             // Wrap the script execution in a promise so we can await it
@@ -219,8 +220,10 @@ function prepareIssueForResponse(issue) {
     return issueCopy;
 }
 
-app.post('/set_target_time', (req, res) => {
-    const { timeMapping } = req.body;
+app.get('/set_target_time', async (req, res) => {
+    const url = `http://localhost:8080/averageTaskTime?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}`;
+    const response = await axios.get(url);
+    timeMap = response.data;
     timeMap = timeMapping;
     console.log(timeMap);
     res.status(201).send('target time updated successfully');
@@ -249,7 +252,7 @@ app.post('/add_issue', (req, res) => {
         originalTime: 1000 * 60 * 5, // Defaulting to 5 minutes
         remainingTime: 1000 * 60 * 5, // Defaulting to 5 minutes
         timer: null,
-        is_timer_on: false,
+        is_timer_on: false,  
     };
 
     issues.push(newIssue);
@@ -257,9 +260,8 @@ app.post('/add_issue', (req, res) => {
 });
 
 // Define a route that receives the POST requests
-app.post('/confirm_issue_data', (req, res) => {
+app.post('/confirm_issue_data', async (req, res) => {
     const { title, description, stress, difficulty } = req.body; // extract other information as needed
-
     // Define your CSV file path
     const filePath = path.join(__dirname, 'utils/user_history.csv');
 
@@ -360,7 +362,7 @@ app.post('/webhook', async (req, res) => {
     // Handle different events and actions accordingly
     if (githubEvent === 'issues' && action === 'opened') {
         console.log(`An issue was opened with this title: ${data.issue.title}`);
-        const response = await axios.get('http://localhost:9100/runMLPipeline');
+        const response = await axios.get('http://localhost:8080/runMLPipeline');
         const stressLevel = response.data.stress;
         const processIssue = new Promise((resolve, reject) => {
                 const pythonProcess = spawn('python3', ['../utils/packaged_python_prediction.py', data.issue.title, data.issue.body, stressLevel]);
