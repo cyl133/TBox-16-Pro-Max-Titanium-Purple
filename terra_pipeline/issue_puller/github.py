@@ -1,9 +1,7 @@
 import requests
-import json
 import os
 from dotenv import load_dotenv
 import dateutil.parser as dp
-import random
 import pandas as pd
 
 # Load environment variables from the .env file
@@ -26,6 +24,7 @@ github_username = 'your-github-username'
 #event: issue or pull
 def get_data(repository_owner, repository_name, event):
     endpoint = f'/repos/{repository_owner}/{repository_name}/{event}'
+    print(endpoint)
     headers = {'Authorization': f'Bearer {access_token}'}
     response = requests.get(base_url + endpoint, headers=headers)
     if response.status_code == 200:
@@ -61,11 +60,11 @@ def get_rolling_avg(data):
 
     return [easy_avg, medium_avg, hard_avg]
     
-def github_time_taken(repository_name, repository_owner):  
-    data = get_data(repository_name, repository_owner, 'issues?state=closed')
+def github_time_taken(repository_owner, repository_name):  
+    data = get_data(repository_owner, repository_name, 'issues?state=closed')
     processed_data = [processed_datum(datum) for datum in data]
     avgs = get_rolling_avg(processed_data)
-    print(avgs)
+    return {"easy": avgs[0], "medium": avgs[1], "hard": avgs[2]}
 
 if __name__ == '__main__':
     github_time_taken('langchain-ai', 'langchain')
