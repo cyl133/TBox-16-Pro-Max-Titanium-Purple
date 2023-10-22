@@ -9,7 +9,7 @@ def main(title, description, stress):
     response = complexity_prediction(issue_data)
 
     # Print the response so that the calling process (Node.js server) can read it
-    print(response)
+    print(response.content, flush=True)
 
 # Entry point of the script
 if __name__ == "__main__":
