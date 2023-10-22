@@ -210,6 +210,13 @@ function prepareIssueForResponse(issue) {
     return issueCopy;
 }
 
+app.post('/set_target_time', (req, res) => {
+    const { timeMapping } = req.body;
+    timeMap = timeMapping;
+    console.log(timeMap);
+    res.status(201).send('target time updated successfully');
+});
+
 // Routes for issue management
 
 app.get('/get_issues', (req, res) => {
@@ -255,11 +262,6 @@ app.post('/edit_issue', (req, res) => {
     } else {
         res.sendStatus(404);
     }
-});
-
-app.post('/update_time_mapping', (req, res) => {
-    const { timeMapping } = req.body;
-    timeMap = timeMapping;
 });
 
 app.post('/stop_timer', (req, res) => {
