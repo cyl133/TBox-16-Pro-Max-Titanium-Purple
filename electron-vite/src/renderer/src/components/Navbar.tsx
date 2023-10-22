@@ -18,9 +18,11 @@ const Navbar = () => {
     >
       <div className="Home">
         <Link to="/Home">Home</Link>
+        <img src="home.svg" alt="Home" />
       </div>
       <div className="Settings">
         <Link to="/Settings">Settings</Link>
+        <img src="settings.svg" alt="Settings" />
       </div>
     </div>
   )

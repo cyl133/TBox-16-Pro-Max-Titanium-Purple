@@ -208,7 +208,7 @@ const GettingStarted = (): JSX.Element => {
       <button onClick={onSubmit}>Hello there</button>
       <img
         src="/Users/sean/Coding/HackHarvard2023/electron-vite/src/renderer/src/assets/playPause/next.svg"
-        alt="Settings"
+        alt="Next"
       />
     </div>
   )

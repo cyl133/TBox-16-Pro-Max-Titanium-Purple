@@ -21,7 +21,10 @@ const Settings = (): JSX.Element => {
         }}
       >
         <CheckInTimeComponent minutes={checkInMinutes} setMinutes={setCheckInMinutes} />
-        <button onClick={onSubmit}>Hello there</button>
+        <div>
+          <button onClick={onSubmit}>Hello there</button>
+          <img src="complete.svg" alt="Complete" />
+        </div>
         {isSuccess && <Navigate to="/home" replace={true} />}
       </div>
       <Navbar />

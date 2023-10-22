@@ -39,6 +39,7 @@ const Launch = (): JSX.Element => {
           marginBottom: '18px'
         }}
       >
+        <img src="./github.svg" alt="Github" />
         <button>Sign Up With GitHub</button>
       </Link>
       <div style={{ fontWeight: 500, fontSize: '13px' }}>Already using TBox 16 ProMax</div>
