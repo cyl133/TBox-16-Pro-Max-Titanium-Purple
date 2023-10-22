@@ -1,5 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import settingsIcon from '../assets/bottombar/settings.svg';
+import issueIcon from '../assets/bottombar/issue.svg';
 
 const Navbar = () => {
   return (
@@ -12,20 +14,23 @@ const Navbar = () => {
         width: '100%',
         display: 'flex',
         justifyContent: 'space-evenly',
-        alignContent: 'center',
-        height: '60px'
+        alignItems: 'center',  // This will vertically center the icons
+        height: '80px'  // Increased height to accommodate bigger icons
       }}
     >
       <div className="Home">
-        <Link to="/Home">Home</Link>
-        <img src="home.svg" alt="Home" />
+        <Link to="/Home">
+          <img src={issueIcon} alt="Home" style={{ width: '40px', height: '40px' }} />
+        </Link>
       </div>
       <div className="Settings">
-        <Link to="/Settings">Settings</Link>
-        <img src="settings.svg" alt="Settings" />
+        <Link to="/Settings">
+          <img src={settingsIcon} alt="Settings" style={{ width: '40px', height: '40px' }} />
+        </Link>
       </div>
     </div>
   )
 }
+
 
 export default Navbar
