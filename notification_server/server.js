@@ -4,11 +4,17 @@ import bodyParser from 'body-parser';
 import fetch from 'node-fetch'; // No need for dynamic import with ESM
 import {spawn} from "child_process";
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
 
 dotenv.config();
 
 const app = express();
 const port = 3000;
+
+// Middleware to parse JSON payloads
+app.use(express.json());
 
 
 app.use(bodyParser.json());
@@ -104,7 +110,8 @@ async function addIssueToSystem(issue) {
         startTime: null,
         timer: null,
         is_confirmed: false,
-        difficulty: issue.difficulty
+        difficulty: issue.difficulty,
+        stressLevel: issue.stressLevel
     };
     issues.push(newIssue); // Adds the new issue to the in-memory store
 }
@@ -112,7 +119,8 @@ async function addIssueToSystem(issue) {
 async function importIssuesToSystem(owner, repo, token) {
     try {
         const issuesFromRepo = await getIssuesFromRepo(owner, repo, token);
-        const stressLevel = "medium stress";
+        const response = await axios.get('http://localhost:9100/runMLPipeline');
+        const stressLevel = response.data.stress;
         for (const issue of issuesFromRepo) {
             // Wrap the script execution in a promise so we can await it
             const processIssue = new Promise((resolve, reject) => {
@@ -128,7 +136,7 @@ async function importIssuesToSystem(owner, repo, token) {
                     // Handle script completion, such as parsing output if necessary
                     let outputData = scriptOutput.trim();
                     issue.difficulty = outputData; // or whatever the actual property name is if it's not 'content'
-
+                    issue.stressLevel = stressLevel;
                     // Insert the issue into the system and resolve the promise once done
                     addIssueToSystem(issue)
                         .then(() => {
@@ -338,9 +346,6 @@ app.post('/start_timer', (req, res) => {
     }
 });
 
-// Middleware to parse JSON payloads
-app.use(express.json());
-
 // POST route for GitHub webhooks
 app.post('/webhook', async (req, res) => {
     // Respond that the webhook was received successfully
@@ -355,8 +360,8 @@ app.post('/webhook', async (req, res) => {
     // Handle different events and actions accordingly
     if (githubEvent === 'issues' && action === 'opened') {
         console.log(`An issue was opened with this title: ${data.issue.title}`);
-
-        let stressLevel = 'medium stress'; //TODO: get this from Terra API
+        const response = await axios.get('http://localhost:9100/runMLPipeline');
+        const stressLevel = response.data.stress;
         const processIssue = new Promise((resolve, reject) => {
                 const pythonProcess = spawn('python3', ['../utils/packaged_python_prediction.py', data.issue.title, data.issue.body, stressLevel]);
 
@@ -374,6 +379,7 @@ app.post('/webhook', async (req, res) => {
                     issue.title = data.issue.title;
                     issue.number = data.issue.number;
                     issue.state = data.issue.number;
+                    issue.stressLevel = stressLevel;
                     // Insert the issue into the system and resolve the promise once done
                     addIssueToSystem(issue)
                         .then(() => {

@@ -6,7 +6,6 @@ import os
 import dotenv
 from call_webhook import get_new_info
 import json
-from utilsML import run_ml_pipeline
 from ml.pipeline import run_ml_pipeline
 
 dotenv.load_dotenv()
@@ -59,4 +58,4 @@ def run_ml_model():
     
     
 if __name__ == "__main__":
-    app.run(host="localhost", port=8080)
+    app.run(host="localhost", port=9100)
