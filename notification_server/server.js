@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 let checkinTimer = null;
 let checkinInterval = 1000 * 10; // e.g., 10 seconds
 let nextCheckinTime = null; // This variable holds the next check-in timestamp
+let timeMap = { "easy": 1000 * 10,"medium": 2000 * 10, "hard": 3000 * 10};
 
 // Function to handle the check-in event
 function handleCheckIn() {
@@ -98,8 +99,8 @@ async function addIssueToSystem(issue) {
         issue_state: issue.state,
         // Add more fields as needed, and initialize your timer properties
         is_timer_on: false,
-        originalTime: 1000 * 60 * 5, // Defaulting to 5 minutes
-        remainingTime: 1000 * 60 * 5, // Defaulting to 5 minutes
+        originalTime: timeMap[issue.difficulty], // Defaulting to 5 minutes
+        remainingTime: timeMap[issue.difficulty], // Defaulting to 5 minutes
         startTime: null,
         timer: null,
         difficulty: issue.difficulty
@@ -110,11 +111,47 @@ async function addIssueToSystem(issue) {
 async function importIssuesToSystem(owner, repo, token) {
     try {
         const issuesFromRepo = await getIssuesFromRepo(owner, repo, token);
-
+        const stressLevel = "medium stress";
         for (const issue of issuesFromRepo) {
-            await addIssueToSystem(issue);
-        }
+            // Wrap the script execution in a promise so we can await it
+            const processIssue = new Promise((resolve, reject) => {
+                const pythonProcess = spawn('python3', ['../utils/packaged_python_prediction.py', issue.title, issue.body, stressLevel]);
 
+                let scriptOutput = '';
+
+                pythonProcess.stdout.on('data', (data) => {
+                    scriptOutput += data.toString(); // Accumulate data from script
+                });
+
+                pythonProcess.stdout.on('end', () => {
+                    // Handle script completion, such as parsing output if necessary
+                    let outputData = scriptOutput.trim();
+                    issue.difficulty = outputData; // or whatever the actual property name is if it's not 'content'
+
+                    // Insert the issue into the system and resolve the promise once done
+                    addIssueToSystem(issue)
+                        .then(() => {
+                            console.log('Issue was added to the system successfully.');
+                            resolve();
+                        })
+                        .catch((error) => {
+                            console.error('Failed to add issue to the system:', error);
+                            reject(error); // Reject the promise on error
+                        });
+                });
+
+                pythonProcess.on('error', (error) => {
+                    console.error('Failed to start the subprocess.', error);
+                    reject(error); // Reject the promise on error
+                });
+
+                // Handle script errors
+                pythonProcess.stderr.on('data', (data) => {
+                    console.error(`Python script error output: ${data}`);
+                });
+            });
+            await processIssue;
+        }
         console.log(`Imported ${issuesFromRepo.length} issues.`);
     } catch (error) {
         console.error('Error importing issues:', error);
@@ -204,9 +241,8 @@ app.post('/add_issue', (req, res) => {
 });
 
 app.post('/edit_issue', (req, res) => {
-    const { issue_number, time } = req.body;
+    const { issue_number, time, difficulty } = req.body;
     const issue = issues.find(i => i.issue_number === issue_number);
-
     if (issue) {
         // Ensure the timer is not running when editing
         if (issue.is_timer_on) {
@@ -214,10 +250,16 @@ app.post('/edit_issue', (req, res) => {
         }
         issue.originalTime = time;
         issue.remainingTime = time; // Update the remaining time for this issue
+        issue.difficulty = difficulty;
         res.sendStatus(200);
     } else {
         res.sendStatus(404);
     }
+});
+
+app.post('/update_time_mapping', (req, res) => {
+    const { timeMapping } = req.body;
+    timeMap = timeMapping;
 });
 
 app.post('/stop_timer', (req, res) => {
@@ -279,15 +321,18 @@ app.post('/webhook', (req, res) => {
         pythonProcess.stdout.on('data', (output) => {
             console.log(`Python Output: ${output}`);
             //TODO: send this data to FE endpoint
-                //add the new inssue to local database
-                data.issue.difficulty = output;
-                addIssueToSystem(data.issue)
-                    .then(() => {
-                        console.log('Issue was added to the system successfully.');
-                    })
-                    .catch((error) => {
-                        console.error('Failed to add issue to the system:', error);
-                    });
+            //add the new inssue to local database
+            data.issue.difficulty = output.content;
+            data.issue.originalTime = timeMap[output.content];
+            data.issue.remainingTime = timeMap[output.content];
+            addIssueToSystem(data.issue)
+                .then(() => {
+                    console.log('Issue was added to the system successfully.');
+                })
+                .catch((error) => {
+                    console.error('Failed to add issue to the system:', error);
+                });
+                
         });
     }
 });
