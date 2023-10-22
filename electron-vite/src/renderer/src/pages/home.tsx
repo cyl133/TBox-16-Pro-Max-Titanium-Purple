@@ -1,7 +1,10 @@
 import IssueTimer from '@renderer/components/IssueTimer'
 import Navbar from '@renderer/components/Navbar'
+import notStartedIcon from '../assets/issueStatus/completed.svg'
+import inProgressIcon from '../assets/issueStatus/inProgress.svg'
+import completedIcon from '../assets/issueStatus/completed.svg'
+import { Link } from 'react-router-dom'
 import { useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
 
 export type IssueType = {
   issueNumber: number
@@ -54,6 +57,19 @@ const Home = () => {
   )
 }
 
+const getIcon = (progressLevel: string) => {
+  switch (progressLevel) {
+    case 'notStarted':
+      return notStartedIcon
+    case 'inProgress':
+      return inProgressIcon
+    case 'completed':
+      return completedIcon
+    default:
+      return notStartedIcon
+  }
+}
+
 const IssueComponent = ({
   issueStatusFile,
   difficultyClass,
@@ -64,9 +80,8 @@ const IssueComponent = ({
   issue: IssueType
 }) => {
   const [isTimerStarted, setIsTimerStarted] = useState(false)
-  const [isClickedContainer, setIsClickedContainer] = useState(false)
 
-  const getStyle = () => {
+  const generateBackgroundColor = () => {
     const style = {
       padding: '30px 40px 30px 40px'
     }
@@ -102,7 +117,13 @@ const IssueComponent = ({
     } else {
       return (
         <Link to={`/editIssue/${issue.issueNumber}`}>
-          <div style={getStyle()}>
+          <div style={{ ...generateBackgroundColor(), display: 'flex', alignItems: 'center' }}>
+            <img
+              src={getIcon(issueStatusFile)}
+              alt={issueStatusFile}
+              style={{ marginRight: '10px' }}
+            />
+
             {/* <img src={`./assets/icon/issueStatus/${issueStatusFile}.svg`} alt={issueStatusFile} /> */}
             <div
               style={{
@@ -150,7 +171,7 @@ const IssueComponent = ({
     }
   }
 
-  return <>{renderView()}</>
+  return renderView()
 }
 
 const issues = [

@@ -74,7 +74,5 @@ def average_task_time():
         _LOGGER.error(f"Error calculating average task time for {owner}/{repository}: {e}")
         return flask.Response(status=500, response="Internal Server Error")
 
-
-    
 if __name__ == "__main__":
     app.run(host="localhost", port=8080)

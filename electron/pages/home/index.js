@@ -50,11 +50,18 @@ const issues = [
   },
 ];
 
-
-
 // Function to generate the list
 function generateIssueList() {
   const issueList = document.getElementById("issue-list");
+
+
+  function sendData(data) {
+    // Encode the data for URL
+    var encodedData = encodeURIComponent(data);
+
+    // Redirect to the receiver page with the data in the URL
+    window.location.href = "./pages/edit/index.html?data=" + encodedData;
+  }
 
   issues.forEach(issue => {
       const difficultyClass = issue.difficulty === "Easy" ? "easy" : issue.difficulty === "Medium" ? "medium" : "hard";
@@ -65,7 +72,7 @@ function generateIssueList() {
       listItem.classList.add(difficultyClass);
       listItem.innerHTML = `
           <img src="./assets/icon/issueStatus/${issueStatusFile}.svg" alt="${issueStatusFile}"" class="progress-icon">
-          <div class="issue-column">
+          <div class="issue-column" onclick="sendData(${issue})">
             <div class="issue-title">${issue.issueName} #${issue.issueNumber}</div>
             <div class="issue-time">${issue.duration}</div>
           </div>

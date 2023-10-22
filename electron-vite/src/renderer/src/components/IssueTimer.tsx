@@ -1,5 +1,4 @@
 import { IssueType } from '@renderer/pages/home'
-import Timer from './timer'
 import PauseIcon from '../assets/playPause/pause.svg'
 import CompleteIcon from '../assets/playPause/complete.svg'
 import { useEffect, useState } from 'react'
