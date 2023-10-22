@@ -61,13 +61,14 @@ def run_ml_model():
 def average_task_time():
     owner = request.args.get('owner')
     repository = request.args.get('repository')
+    print(owner, repository)
 
     if not owner or not repository:
         return flask.jsonify({"error": "Owner and repository parameters are required"}), 400
     
     try:
         # Fetching task durations based on owner and repository (replace with actual logic)
-        durations = github_time_taken(repository, owner)
+        durations = github_time_taken(owner, repository)
         return flask.jsonify(durations)
     except Exception as e:
         _LOGGER.error(f"Error calculating average task time for {owner}/{repository}: {e}")
@@ -76,4 +77,4 @@ def average_task_time():
 
     
 if __name__ == "__main__":
-    app.run(host="localhost", port=9100)
+    app.run(host="localhost", port=8080)
