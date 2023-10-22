@@ -1,7 +1,8 @@
 import { IssueType } from '@renderer/pages/home'
-import PauseIcon from '../assets/playPause/pause.svg'
-import CompleteIcon from '../assets/playPause/complete.svg'
+import pauseIcon from '../assets/playPause/pause.svg'
+import completeIcon from '../assets/playPause/complete.svg'
 import { useEffect, useState } from 'react'
+import { showNotification } from './notification'
 
 const IssueTimer = ({
   issue,
@@ -43,14 +44,19 @@ const IssueTimer = ({
       }, 1000)
     }
 
+    if (seconds === 0) {
+      // Timer has reached zero, add your action here
+      showNotification()
+      clearInterval(interval) // Stop the timer
+    }
+
     return () => clearInterval(interval)
   }, [isRunning, seconds])
 
   return (
     <div
       style={{
-        backgroundColor: 'purple',
-        height: '300px',
+        backgroundColor: 'white',
         padding: '90px 40px 30px 40px'
       }}
     >
@@ -62,9 +68,18 @@ const IssueTimer = ({
           marginBottom: '16px'
         }}
       >
-        {issue?.issueName} · #{issue?.issueNumber}
+        {issue?.issueName.toUpperCase()} · #{issue?.issueNumber}
       </div>
-      <div>{seconds} seconds remaining</div>
+      <div
+        style={{
+          fontWeight: 'lighter',
+          fontSize: '82px',
+          color: 'black',
+          marginBottom: '40px'
+        }}
+      >
+        {seconds} seconds
+      </div>
       <div
         style={{
           flexDirection: 'row',
@@ -75,7 +90,7 @@ const IssueTimer = ({
         <MiniComponent title={'TARGET TIME'} text={targetTime} textColor="black" />
         <MiniComponent
           title={'DIFFICULTY'}
-          text={issue.difficulty}
+          text={issue.difficulty.toUpperCase()}
           textColor={getButtonStyle(issue.difficulty)}
         />
       </div>
@@ -85,8 +100,8 @@ const IssueTimer = ({
           display: 'flex'
         }}
       >
-        <ButtonComponent onClick={stopTimer} component={<PauseIcon />} text={'PAUSE'} />
-        <ButtonComponent onClick={completeTimer} component={<CompleteIcon />} text={'COMPLETE'} />
+        <ButtonComponent onClick={stopTimer} component={pauseIcon} text={'PAUSE'} />
+        <ButtonComponent onClick={completeTimer} component={completeIcon} text={'COMPLETE'} />
       </div>
     </div>
   )
@@ -102,12 +117,17 @@ const MiniComponent = ({
   textColor: string
 }) => {
   return (
-    <div>
+    <div
+      style={{
+        marginRight: '24px'
+      }}
+    >
       <div
         style={{
           fontWeight: 500,
           fontSize: '14px',
-          color: '#838792'
+          color: '#838792',
+          marginBottom: '16px'
         }}
       >
         {title}
@@ -131,18 +151,27 @@ const ButtonComponent = ({
   text
 }: {
   onClick: () => void
-  component: JSX.Element
+  component: string
   text: string
 }) => {
   return (
-    <div style={{ flexDirection: 'row', justifyContent: 'center', display: 'flex' }}>
+    <div
+      style={{
+        flexDirection: 'row',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
+        marginRight: '30px'
+      }}
+    >
       <div
         onClick={onClick}
         style={{
-          marginRight: '30px'
+          cursor: 'pointer'
         }}
       >
-        {component}
+        <img src={component} alt={component} style={{ marginRight: '10px' }} />
       </div>
       <div
         style={{

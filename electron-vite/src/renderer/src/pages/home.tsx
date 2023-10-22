@@ -123,7 +123,6 @@ const IssueComponent = ({
               alt={issueStatusFile}
               style={{ marginRight: '10px' }}
             />
-
             {/* <img src={`./assets/icon/issueStatus/${issueStatusFile}.svg`} alt={issueStatusFile} /> */}
             <div
               style={{
