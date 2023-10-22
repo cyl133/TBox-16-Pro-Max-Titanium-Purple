@@ -160,6 +160,11 @@ const DifficultyComponent = ({ difficultySelected, onPressDifficulty }) => {
         return {
           ...style,
           border: `1px solid ${getButtonStyle(difficulty)}`,
+          cursor: 'pointer', // to change the cursor when hovered over the button
+          borderRadius: '4px', // to make the buttons have rounded corners
+          textAlign: 'center', // to center-align the text
+          transition: 'transform 0.3s ease, box-shadow 0.3s ease', // for a smooth transition effect
+          boxShadow: '0px 2px 5px rgba(0,0,0,0.1)', // to give a slight elevation effect
           // borderColor: getButtonStyle(difficulty),
           backgroundColor: getButtonStyle(difficulty),
           color: 'white'
@@ -167,6 +172,13 @@ const DifficultyComponent = ({ difficultySelected, onPressDifficulty }) => {
       } else {
         return {
           ...style,
+          cursor: 'pointer', // to change the cursor when hovered over the button
+          borderRadius: '4px', // to make the buttons have rounded corners
+          textAlign: 'center', // to center-align the text
+          alignItems: 'center',
+          justifyContent: 'center',
+          // transition: 'transform 0.3s ease, box-shadow 0.3s ease', // for a smooth transition effect
+          boxShadow: '0px 2px 5px rgba(0,0,0,0.1)', // to give a slight elevation effect
           // border: '1px',
           // borderColor: getButtonStyle(difficulty),
           border: `1px solid ${getButtonStyle(difficulty)}`,
