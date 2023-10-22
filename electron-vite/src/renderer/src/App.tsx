@@ -158,10 +158,10 @@ function App(): JSX.Element {
       >
         <Routes>
           <Route path="/" element={<Launch />} />
+          <Route path="/gettingStarted" element={<GettingStarted />} />
+          <Route path="/Home" element={<Home />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/editIssue" element={<EditIssue />} />
-          <Route path="/Home" element={<Home />} />
-          <Route path="/gettingStarted" element={<GettingStarted />} />
         </Routes>
       </div>
     </>

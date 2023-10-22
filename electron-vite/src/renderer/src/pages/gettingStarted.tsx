@@ -14,7 +14,7 @@ type EditTimeComponentProps = {
   color: string
 }
 
-const EditTimeComponent = ({
+export const EditTimeComponent = ({
   title,
   color,
   days,
@@ -206,6 +206,10 @@ const GettingStarted = (): ReactNode => {
       <CheckInTimeComponent minutes={checkInMinutes} setMinutes={setCheckInMinutes} />
       {isSuccess && <Navigate to="/home" replace={true} />}
       <button onClick={onSubmit}>Hello there</button>
+      <img
+        src="/Users/sean/Coding/HackHarvard2023/electron-vite/src/renderer/src/assets/playPause/next.svg"
+        alt="Settings"
+      />
     </div>
   )
 }
