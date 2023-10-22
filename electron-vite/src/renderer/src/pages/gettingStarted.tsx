@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
+import nextIcon from '../assets/playPause/next.svg';
 
 type EditTimeComponentProps = {
   days: number
@@ -205,11 +206,20 @@ const GettingStarted = (): JSX.Element => {
       />
       <CheckInTimeComponent minutes={checkInMinutes} setMinutes={setCheckInMinutes} />
       {isSuccess && <Navigate to="/home" replace={true} />}
-      <button onClick={onSubmit}>Hello there</button>
-      <img
-        src="/Users/sean/Coding/HackHarvard2023/electron-vite/src/renderer/src/assets/playPause/next.svg"
-        alt="Next"
-      />
+    <button 
+        onClick={onSubmit} 
+        style={{
+            position: 'absolute',
+            right: '10px',
+            bottom: '10px',
+            border: 'none',
+            backgroundColor: 'transparent',
+            cursor: 'pointer'
+        }}
+    >
+        <img src={nextIcon} alt="Next" />
+    </button>
+
     </div>
   )
 }
