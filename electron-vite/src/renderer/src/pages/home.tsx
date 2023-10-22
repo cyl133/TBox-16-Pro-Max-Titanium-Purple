@@ -5,6 +5,7 @@ import inProgressIcon from '../assets/issueStatus/inProgress.svg'
 import completedIcon from '../assets/issueStatus/completed.svg'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import playIcon from '../assets/playPause/play.svg';
 
 export type IssueType = {
   issueNumber: number
@@ -16,6 +17,8 @@ export type IssueType = {
 }
 
 const Home = () => {
+  // const [issues, setIssues] = useState()
+
   const generateIssueList = () => {
     return issues.map((issue, counter) => {
       const difficultyClass =
@@ -72,8 +75,7 @@ const Home = () => {
 
   return (
     <div>
-      <button onClick={fetchIssues}>Fetch Issues</button>
-      {/* <div
+      <div
         style={{
           position: 'absolute',
           top: 0,
@@ -84,7 +86,7 @@ const Home = () => {
         }}
       >
         {generateIssueList()}
-      </div> */}
+      </div>
       <Navbar />
     </div>
   )
@@ -192,7 +194,16 @@ const IssueComponent = ({
                 {issue.duration}
               </div>
             </div>
-            <button onClick={onClickStartButton}>Hello there</button>
+            <button onClick={onClickStartButton}
+            style={{
+              position: 'absolute',
+              right: '10px',
+              border: 'none',
+              backgroundColor: 'transparent',
+              cursor: 'pointer'
+          }}
+          >  
+            <img src={playIcon} alt="Next" /></button>
 
             {/* {isClickedContainer && <Navigate to={`/editIssue/${issue.issueNumber}`} />}) */}
             {/* <div>
