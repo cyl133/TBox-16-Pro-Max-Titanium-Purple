@@ -1,5 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import githubIcon from '../assets/github.svg';
+
 
 const Launch = (): JSX.Element => {
   return (
@@ -45,6 +47,7 @@ const Launch = (): JSX.Element => {
           borderRadius: '4px'  // Optional: to give it a rounded button look
         }}
       >
+        <img src={githubIcon} alt="GitHub Icon" width="20" height="20" style={{ float: 'left', marginRight: '8px' }} />
         Sign Up With GitHub
         
       </Link>
