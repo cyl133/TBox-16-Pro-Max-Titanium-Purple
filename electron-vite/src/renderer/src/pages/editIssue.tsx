@@ -2,6 +2,8 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { EditTimeComponent } from './gettingStarted'
 import { useState } from 'react'
 import Navbar from '@renderer/components/Navbar'
+import backIcon from '../assets/playPause/back.svg'
+import nextIcon from '../assets/playPause/complete.svg';
 
 const PADDING_HORIZONTAL = '50px'
 const PADDING_VERTICAL = '29px'
@@ -65,8 +67,17 @@ const EditIssue = () => {
   return (
     <div>
       <div style={getStyle()}>
-        <button onClick={goBack}>
-          <img src="back.svg" alt="Back" />
+        <button onClick={goBack}
+        style={{
+          position: 'absolute',
+          top: '41px',
+          left: '45px',
+          border: 'none',
+          backgroundColor: 'transparent',
+          cursor: 'pointer'
+      }}
+      >
+          <img src={backIcon} alt="Back" />
         </button>
         <div
           style={{
@@ -103,8 +114,17 @@ const EditIssue = () => {
           onPressDifficulty={onPressDifficulty}
         />
         {isSuccess && <Navigate to="/home" replace={true} />}
-        <button onClick={onClick}>
-          <img src="next.svg" alt="Next" />
+        <button onClick={onClick}
+              style={{
+                position: 'absolute',
+                bottom: '106px',
+                right: '57px',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer'
+            }}
+          >
+          <img src={nextIcon} alt="Next" />
         </button>
       </div>
       <Navbar />
