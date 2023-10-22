@@ -1,5 +1,9 @@
 import Navbar from '@renderer/components/Navbar'
-import { Link } from 'react-router-dom'
+import notStartedIcon from '../assets/issueStatus/completed.svg';
+import inProgressIcon from '../assets/issueStatus/inProgress.svg';
+import completedIcon from '../assets/issueStatus/completed.svg';
+import { Link } from 'react-router-dom';
+
 
 type IssueType = {
   issueNumber: number
@@ -61,7 +65,7 @@ const IssueComponent = ({
   difficultyClass: string
   issue: IssueType
 }) => {
-  const getStyle = () => {
+  const generateBackgroundColor = () => {
     const style = {
       padding: '30px 40px 30px 40px'
     }
@@ -85,24 +89,42 @@ const IssueComponent = ({
     }
   }
 
+
+const getIcon = (progressLevel: string) => {
+  switch (progressLevel) {
+    case "notStarted":
+      return notStartedIcon;
+    case "inProgress":
+      return inProgressIcon;
+    case "completed":
+      return completedIcon;
+    default:
+      return notStartedIcon;
+  }
+}
+
+
   return (
     <Link to={`/editIssue/${issue.issueNumber}`}>
-      <div style={getStyle()}>
-        {/* <img src={`./assets/icon/issueStatus/${issueStatusFile}.svg`} alt={issueStatusFile} /> */}
-        <div
-          style={{
-            width: '80%',
-            padding: '0px 0px 0px 18px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            whiteSpace: 'nowrap',
-            /* Prevent text from wrapping to the next line */
-            overflow: 'hidden',
-            /* Hide the overflow */
-            textOverflow: 'ellipsis'
-            /* Show an ellipsis (...) when text overflows */
-          }}
+      <div style={{...generateBackgroundColor(), display: 'flex', alignItems: 'center'}}>
+        <img src={getIcon(issueStatusFile)} alt={issueStatusFile} style={{marginRight: '10px'}} /> 
+        {/* marginRight is added for some spacing between the icon and the text */}
+        
+      <div
+        style={{
+          width: '80%',
+          padding: '0px 0px 0px 18px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          whiteSpace: 'nowrap',
+          /* Prevent text from wrapping to the next line */
+          overflow: 'hidden',
+          /* Hide the overflow */
+          textOverflow: 'ellipsis'
+          /* Show an ellipsis (...) when text overflows */
+        }}
+
         >
           <div
             style={{
@@ -124,14 +146,15 @@ const IssueComponent = ({
             {issue.duration}
           </div>
         </div>
-        {/* <div>
+      </div>
+      {/* <div>
         <img src="./assets/icon/playPause/play.svg" alt="Play" />
       </div> */}
-      </div>
-      {/* <div className={`issue-div ${difficultyClass} ${issueStatusFile}`}>{issue.issueName}</div> */}
     </Link>
   )
 }
+
+
 
 const issues = [
   {
