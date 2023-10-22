@@ -14,7 +14,7 @@ type EditTimeComponentProps = {
   color: string
 }
 
-const EditTimeComponent = ({
+export const EditTimeComponent = ({
   title,
   color,
   days,
@@ -52,7 +52,7 @@ const EditTimeComponent = ({
           value={days}
           onChange={(e) => onChangeDays(parseInt(e.target.value))}
         />
-        <span style={{ marginRight: '10px' }}> DAYS </span>
+        <span style={{ marginRight: '10px', fontSize: '12px', fontWeight: 400 }}> DAYS </span>
         <input
           type="number"
           id="hoursInput"
@@ -63,7 +63,7 @@ const EditTimeComponent = ({
           value={hours}
           onChange={(e) => onChangeHours(parseInt(e.target.value))}
         />
-        <span style={{ marginRight: '10px' }}> HOURS </span>
+        <span style={{ marginRight: '10px', fontSize: '12px', fontWeight: 400 }}> HOURS </span>
         <input
           type="number"
           id="minutesInput"
@@ -74,7 +74,7 @@ const EditTimeComponent = ({
           value={minutes}
           onChange={(e) => onChangeMinutes(parseInt(e.target.value))}
         />
-        <span style={{ marginRight: '10px' }}> MIN </span>
+        <span style={{ marginRight: '10px', fontSize: '12px', fontWeight: 400 }}> MIN </span>
         <input
           type="number"
           id="secondsInput"
@@ -85,7 +85,7 @@ const EditTimeComponent = ({
           value={seconds}
           onChange={(e) => onChangeSeconds(parseInt(e.target.value))}
         />
-        <span style={{ marginRight: '10px' }}> SEC </span>
+        <span style={{ marginRight: '10px', fontSize: '12px', fontWeight: 400 }}> SEC </span>
       </div>
     </div>
   )
@@ -118,7 +118,7 @@ export const CheckInTimeComponent = ({ minutes, setMinutes }) => {
         value={minutes}
         onChange={(e) => setMinutes(e.target.value)}
       />
-      <span style={{ marginRight: '10px' }}> MIN </span>
+      <span style={{ marginRight: '10px', fontSize: '12px', fontWeight: 400 }}> MIN </span>
     </div>
   )
 }

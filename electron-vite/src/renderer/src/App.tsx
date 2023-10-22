@@ -161,7 +161,7 @@ function App(): JSX.Element {
           <Route path="/gettingStarted" element={<GettingStarted />} />
           <Route path="/Home" element={<Home />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/editIssue" element={<EditIssue />} />
+          <Route path="/editIssue/:issueNumber" element={<EditIssue />} />
         </Routes>
       </div>
     </>

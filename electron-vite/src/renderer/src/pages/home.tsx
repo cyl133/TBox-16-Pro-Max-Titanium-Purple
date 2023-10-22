@@ -1,4 +1,5 @@
 import Navbar from '@renderer/components/Navbar'
+import { Link } from 'react-router-dom'
 
 type IssueType = {
   issueNumber: number
@@ -60,7 +61,7 @@ const IssueComponent = ({
   difficultyClass: string
   issue: IssueType
 }) => {
-  const generateBackgroundColor = () => {
+  const getStyle = () => {
     const style = {
       padding: '30px 40px 30px 40px'
     }
@@ -85,47 +86,50 @@ const IssueComponent = ({
   }
 
   return (
-    <div style={generateBackgroundColor()}>
-      {/* <img src={`./assets/icon/issueStatus/${issueStatusFile}.svg`} alt={issueStatusFile} /> */}
-      <div
-        style={{
-          width: '80%',
-          padding: '0px 0px 0px 18px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          whiteSpace: 'nowrap',
-          /* Prevent text from wrapping to the next line */
-          overflow: 'hidden',
-          /* Hide the overflow */
-          textOverflow: 'ellipsis'
-          /* Show an ellipsis (...) when text overflows */
-        }}
-      >
+    <Link to={`/editIssue/${issue.issueNumber}`}>
+      <div style={getStyle()}>
+        {/* <img src={`./assets/icon/issueStatus/${issueStatusFile}.svg`} alt={issueStatusFile} /> */}
         <div
           style={{
-            flex: 1,
-            color: 'white',
-            fontSize: '16px',
-            fontWeight: 500,
-            paddingBottom: '6px'
+            width: '80%',
+            padding: '0px 0px 0px 18px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            whiteSpace: 'nowrap',
+            /* Prevent text from wrapping to the next line */
+            overflow: 'hidden',
+            /* Hide the overflow */
+            textOverflow: 'ellipsis'
+            /* Show an ellipsis (...) when text overflows */
           }}
         >
-          {issue.issueName} #{issue.issueNumber}
+          <div
+            style={{
+              flex: 1,
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 500,
+              paddingBottom: '6px'
+            }}
+          >
+            {issue.issueName} #{issue.issueNumber}
+          </div>
+          <div
+            style={{
+              fontSize: '12px',
+              color: 'white'
+            }}
+          >
+            {issue.duration}
+          </div>
         </div>
-        <div
-          style={{
-            fontSize: '12px',
-            color: 'white'
-          }}
-        >
-          ${issue.duration}
-        </div>
-      </div>
-      {/* <div>
+        {/* <div>
         <img src="./assets/icon/playPause/play.svg" alt="Play" />
       </div> */}
-    </div>
+      </div>
+      {/* <div className={`issue-div ${difficultyClass} ${issueStatusFile}`}>{issue.issueName}</div> */}
+    </Link>
   )
 }
 
