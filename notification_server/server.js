@@ -103,6 +103,7 @@ async function addIssueToSystem(issue) {
         remainingTime: timeMap[issue.difficulty], // Defaulting to 5 minutes
         startTime: null,
         timer: null,
+        is_confirmed: false,
         difficulty: issue.difficulty
     };
     issues.push(newIssue); // Adds the new issue to the in-memory store
@@ -210,6 +211,13 @@ function prepareIssueForResponse(issue) {
     return issueCopy;
 }
 
+app.post('/set_target_time', (req, res) => {
+    const { timeMapping } = req.body;
+    timeMap = timeMapping;
+    console.log(timeMap);
+    res.status(201).send('target time updated successfully');
+});
+
 // Routes for issue management
 
 app.get('/get_issues', (req, res) => {
@@ -240,6 +248,46 @@ app.post('/add_issue', (req, res) => {
     res.status(201).send('Issue added successfully');
 });
 
+// Define a route that receives the POST requests
+app.post('/confirm_issue_data', (req, res) => {
+    const { title, description, stress, difficulty } = req.body; // extract other information as needed
+
+    // Define your CSV file path
+    const filePath = path.join(__dirname, 'utils/user_history.csv');
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            return res.sendStatus(500); // Internal Server Error
+        }
+
+        // Split the CSV file into lines
+        let lines = data.split('\n');
+
+        // Remove the first line (header)
+        lines.shift();
+
+        // Prepare the new line to be added
+        const newIssue = `"${title}","${description}","${stress}","${difficulty}"`;
+
+        // Add the new issue at the end of the array
+        lines.push(newIssue);
+
+        // Prepare data to be written to the CSV, turning the array back into a string
+        const updatedData = lines.join('\n');
+
+        fs.writeFile(filePath, updatedData, 'utf8', (writeErr) => {
+            if (writeErr) {
+                console.error('Error writing file:', writeErr);
+                return res.sendStatus(500); // Internal Server Error
+            }
+            console.log('CSV updated successfully.');
+            res.status(200).send('Issue confirmed and CSV updated.');
+        });
+    });
+});
+
+
 app.post('/edit_issue', (req, res) => {
     const { issue_number, time, difficulty } = req.body;
     const issue = issues.find(i => i.issue_number === issue_number);
@@ -255,11 +303,6 @@ app.post('/edit_issue', (req, res) => {
     } else {
         res.sendStatus(404);
     }
-});
-
-app.post('/update_time_mapping', (req, res) => {
-    const { timeMapping } = req.body;
-    timeMap = timeMapping;
 });
 
 app.post('/stop_timer', (req, res) => {
@@ -299,7 +342,7 @@ app.post('/start_timer', (req, res) => {
 app.use(express.json());
 
 // POST route for GitHub webhooks
-app.post('/webhook', (req, res) => {
+app.post('/webhook', async (req, res) => {
     // Respond that the webhook was received successfully
     res.status(202).send('Accepted');
 
@@ -314,26 +357,46 @@ app.post('/webhook', (req, res) => {
         console.log(`An issue was opened with this title: ${data.issue.title}`);
 
         let stressLevel = 'medium stress'; //TODO: get this from Terra API
+        const processIssue = new Promise((resolve, reject) => {
+                const pythonProcess = spawn('python3', ['../utils/packaged_python_prediction.py', data.issue.title, data.issue.body, stressLevel]);
 
-        const pythonProcess = spawn('python3', ['../utils/packaged_python_prediction.py', data.issue.title, data.issue.body, stressLevel]);
+                let scriptOutput = '';
 
-        // Listen for data from the Python script's standard output.
-        pythonProcess.stdout.on('data', (output) => {
-            console.log(`Python Output: ${output}`);
-            //TODO: send this data to FE endpoint
-            //add the new inssue to local database
-            data.issue.difficulty = output.content;
-            data.issue.originalTime = timeMap[output.content];
-            data.issue.remainingTime = timeMap[output.content];
-            addIssueToSystem(data.issue)
-                .then(() => {
-                    console.log('Issue was added to the system successfully.');
-                })
-                .catch((error) => {
-                    console.error('Failed to add issue to the system:', error);
+                pythonProcess.stdout.on('data', (data) => {
+                    scriptOutput += data.toString(); // Accumulate data from script
                 });
-                
-        });
+
+                pythonProcess.stdout.on('end', () => {
+                    let issue = {};
+                    // Handle script completion, such as parsing output if necessary
+                    let outputData = scriptOutput.trim();
+                    issue.difficulty = outputData; // or whatever the actual property name is if it's not 'content'
+                    issue.title = data.issue.title;
+                    issue.number = data.issue.number;
+                    issue.state = data.issue.number;
+                    // Insert the issue into the system and resolve the promise once done
+                    addIssueToSystem(issue)
+                        .then(() => {
+                            console.log('Issue was added to the system successfully.');
+                            resolve();
+                        })
+                        .catch((error) => {
+                            console.error('Failed to add issue to the system:', error);
+                            reject(error); // Reject the promise on error
+                        });
+                });
+
+                pythonProcess.on('error', (error) => {
+                    console.error('Failed to start the subprocess.', error);
+                    reject(error); // Reject the promise on error
+                });
+
+                // Handle script errors
+                pythonProcess.stderr.on('data', (data) => {
+                    console.error(`Python script error output: ${data}`);
+                });
+            });      
+            await processIssue;          
     }
 });
 

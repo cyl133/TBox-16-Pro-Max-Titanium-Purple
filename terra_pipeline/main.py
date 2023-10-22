@@ -6,6 +6,8 @@ import os
 import dotenv
 from call_webhook import get_new_info
 import json
+from utilsML import run_ml_pipeline
+from ml.pipeline import run_ml_pipeline
 
 dotenv.load_dotenv()
 
@@ -42,6 +44,18 @@ def consume_terra_webhook() -> flask.Response:
       return flask.Response(status=200)
     else:
       return flask.Response(status=403)
+    
+@app.route("/runMLPipeline", methods=["GET"])
+def run_ml_model():
+    try:
+        with open(FILE_NAME, 'r') as file:
+            data = json.load(file)
+            
+        results = run_ml_pipeline(data)
+        return flask.jsonify(results)
+    except Exception as e:
+        _LOGGER.error(f"Error running ML model: {e}")
+        return flask.Response(status=500, response="Internal Server Error")
     
     
 if __name__ == "__main__":
