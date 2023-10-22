@@ -16,6 +16,8 @@ export type IssueType = {
 }
 
 const Home = () => {
+  // const [issues, setIssues] = useState()
+
   const generateIssueList = () => {
     return issues.map((issue, counter) => {
       const difficultyClass =
@@ -72,8 +74,7 @@ const Home = () => {
 
   return (
     <div>
-      <button onClick={fetchIssues}>Fetch Issues</button>
-      {/* <div
+      <div
         style={{
           position: 'absolute',
           top: 0,
@@ -84,7 +85,7 @@ const Home = () => {
         }}
       >
         {generateIssueList()}
-      </div> */}
+      </div>
       <Navbar />
     </div>
   )
