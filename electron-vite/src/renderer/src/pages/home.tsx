@@ -5,6 +5,7 @@ import inProgressIcon from '../assets/issueStatus/inProgress.svg'
 import completedIcon from '../assets/issueStatus/completed.svg'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import playIcon from '../assets/playPause/play.svg';
 
 export type IssueType = {
   issueNumber: number
@@ -193,7 +194,16 @@ const IssueComponent = ({
                 {issue.duration}
               </div>
             </div>
-            <button onClick={onClickStartButton}>Hello there</button>
+            <button onClick={onClickStartButton}
+            style={{
+              position: 'absolute',
+              right: '10px',
+              border: 'none',
+              backgroundColor: 'transparent',
+              cursor: 'pointer'
+          }}
+          >  
+            <img src={playIcon} alt="Next" /></button>
 
             {/* {isClickedContainer && <Navigate to={`/editIssue/${issue.issueNumber}`} />}) */}
             {/* <div>
