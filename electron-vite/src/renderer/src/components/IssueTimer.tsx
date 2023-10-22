@@ -3,6 +3,7 @@ import pauseIcon from '../assets/playPause/pause.svg'
 import completeIcon from '../assets/playPause/complete.svg'
 import { useEffect, useState } from 'react'
 import { showNotification } from './notification'
+import { formatMilliseconds } from '@renderer/constants'
 
 const IssueTimer = ({
   issue,
@@ -68,7 +69,7 @@ const IssueTimer = ({
           marginBottom: '16px'
         }}
       >
-        {issue?.issueName.toUpperCase()} · #{issue?.issueNumber}
+        {issue?.issue_title.toUpperCase()} · #{issue?.issue_number}
       </div>
       <div
         style={{
@@ -78,7 +79,7 @@ const IssueTimer = ({
           marginBottom: '40px'
         }}
       >
-        {seconds} seconds
+        {formatMilliseconds(seconds)}
       </div>
       <div
         style={{

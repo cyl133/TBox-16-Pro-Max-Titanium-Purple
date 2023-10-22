@@ -1,14 +1,17 @@
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { EditTimeComponent } from './gettingStarted'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from '@renderer/components/Navbar'
+import { IssueComponent, IssueType } from './home'
+import { issues_data } from '@renderer/constants'
 
 const PADDING_HORIZONTAL = '50px'
 const PADDING_VERTICAL = '29px'
 
 const EditIssue = () => {
   const { issueNumber } = useParams()
-  const issue = issues.find((item) => item.issueNumber === parseInt(issueNumber))
+  const [issues, setIssues] = useState<IssueType[]>()
+  const issue = issues?.find((item: IssueType) => item.issue_number === parseInt(issueNumber))
   const [difficultySelected, setDifficultySelected] = useState(issue?.difficulty || 'Easy')
   const [isSuccess, setSuccess] = useState(false)
   const navigate = useNavigate()
@@ -23,6 +26,63 @@ const EditIssue = () => {
 
   const onPressDifficulty = (difficulty: string) => {
     setDifficultySelected(difficulty)
+  }
+
+  useEffect(() => {
+    const fetchIssues = async () => {
+      // const url = 'https://c038-172-58-219-55.ngrok-free.app/get_issues'
+      // const url = 'http://localhost:3000/get_issues'
+
+      // try {
+      //   // Fetching data from the server
+      //   const response = await fetch(url, {
+      //     method: 'GET', // Making an external GET request to fetch issues
+      //     headers: {
+      //       'Content-Type': 'application/json'
+      //     }
+      //   })
+
+      //   // console.log('response is', response)
+      //   const data = await response.text()
+      //   console.log('data is', data)
+
+      //   if (response.ok) {
+      //     // Update state with the issues
+      //     // setIssues(data)
+      //   } else {
+      //     console.error('Server response was not ok.')
+      //   }
+      // } catch (error) {
+      //   console.error('Fetching data failed', error)
+      // }
+
+      setIssues(issues_data)
+    }
+
+    fetchIssues().then(() => generateIssueList())
+  }, []) // Empty dependency array means this useEffect runs once when the component mounts
+
+  const generateIssueList = () => {
+    console.log('issues', issues)
+    return issues?.map((issue, counter) => {
+      const difficultyClass =
+        issue.difficulty === 'Easy' ? 'easy' : issue.difficulty === 'Medium' ? 'medium' : 'hard'
+      const issueStatusFile =
+        issue.is_timer_on && issue.issue_state.toLowerCase() === 'open'
+          ? 'inProgress'
+          : !issue.is_timer_on && issue.issue_state.toLowerCase() === 'open'
+          ? 'open'
+          : 'completed'
+
+      return (
+        <IssueComponent
+          key={counter}
+          issueStatusFile={issueStatusFile}
+          difficultyClass={difficultyClass}
+          issue={issue}
+        />
+      )
+    })
   }
 
   const onClick = () => {
@@ -78,7 +138,7 @@ const EditIssue = () => {
             left: PADDING_HORIZONTAL
           }}
         >
-          {issue?.issueName} · #{issue?.issueNumber}
+          {issue?.issue_title} · #{issue?.issue_number}
         </div>
       </div>
       <div

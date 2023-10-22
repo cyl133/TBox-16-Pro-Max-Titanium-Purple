@@ -1,33 +1,39 @@
 import IssueTimer from '@renderer/components/IssueTimer'
 import Navbar from '@renderer/components/Navbar'
-import notStartedIcon from '../assets/issueStatus/completed.svg'
+import notStartedIcon from '../assets/issueStatus/notStarted.svg'
 import inProgressIcon from '../assets/issueStatus/inProgress.svg'
 import completedIcon from '../assets/issueStatus/completed.svg'
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { formatMilliseconds, formatMillisecondsString, issues_data } from '@renderer/constants'
 
 export type IssueType = {
-  issueNumber: number
-  issueName: string
-  duration: string
+  issue_title: string
+  issue_number: number
+  issue_state: string
+  is_timer_on: boolean
+  originalTime: number // miliseconds
+  remainingTime: number // miliseconds
+  startTime: Date | null
+  is_confirmed: boolean
   difficulty: string
-  progress: string
-  githubIssue: string
+  stressLevel: string
 }
 
 const Home = () => {
-  // const [issues, setIssues] = useState()
+  const [issues, setIssues] = useState<IssueType[]>()
 
   const generateIssueList = () => {
-    return issues.map((issue, counter) => {
+    console.log('issues', issues)
+    return issues?.map((issue, counter) => {
       const difficultyClass =
-        issue.difficulty === 'Easy' ? 'easy' : issue.difficulty === 'Medium' ? 'medium' : 'hard'
+        issue.difficulty === 'easy' ? 'easy' : issue.difficulty === 'medium' ? 'medium' : 'hard'
       const issueStatusFile =
-        issue.progress === 'Open'
-          ? 'notStarted'
-          : issue.progress === 'In Progress'
+        issue.is_timer_on && issue.issue_state.toLowerCase() === 'open'
           ? 'inProgress'
-          : 'completed'
+          : issue.issue_state.toLowerCase() === 'close'
+          ? 'completed'
+          : 'notStarted'
 
       return (
         <IssueComponent
@@ -40,37 +46,39 @@ const Home = () => {
     })
   }
 
-  // // useEffect(() => {
-  const fetchIssues = async () => {
-    // const url = 'https://c038-172-58-219-55.ngrok-free.app/get_issues'
-    const url = 'http://localhost:3000/get_issues'
+  useEffect(() => {
+    const fetchIssues = async () => {
+      // const url = 'https://c038-172-58-219-55.ngrok-free.app/get_issues'
+      // const url = 'http://localhost:3000/get_issues'
 
-    try {
-      // Fetching data from the server
-      const response = await fetch(url, {
-        method: 'GET', // Making an external GET request to fetch issues
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
+      // try {
+      //   // Fetching data from the server
+      //   const response = await fetch(url, {
+      //     method: 'GET', // Making an external GET request to fetch issues
+      //     headers: {
+      //       'Content-Type': 'application/json'
+      //     }
+      //   })
 
-      // console.log('response is', response)
-      const data = await response.text()
-      console.log('data is', data)
+      //   // console.log('response is', response)
+      //   const data = await response.text()
+      //   console.log('data is', data)
 
-      if (response.ok) {
-        // Update state with the issues
-        // setIssues(data)
-      } else {
-        console.error('Server response was not ok.')
-      }
-    } catch (error) {
-      console.error('Fetching data failed', error)
+      //   if (response.ok) {
+      //     // Update state with the issues
+      //     // setIssues(data)
+      //   } else {
+      //     console.error('Server response was not ok.')
+      //   }
+      // } catch (error) {
+      //   console.error('Fetching data failed', error)
+      // }
+
+      setIssues(issues_data)
     }
-  }
 
-  // // fetchIssues()
-  // // }, []) // Empty dependency array means this useEffect runs once when the component mounts
+    fetchIssues().then(() => generateIssueList())
+  }, []) // Empty dependency array means this useEffect runs once when the component mounts
 
   return (
     <div>
@@ -104,7 +112,7 @@ const getIcon = (progressLevel: string) => {
   }
 }
 
-const IssueComponent = ({
+export const IssueComponent = ({
   issueStatusFile,
   difficultyClass,
   issue
@@ -147,10 +155,16 @@ const IssueComponent = ({
 
   const renderView = () => {
     if (isTimerStarted) {
-      return <IssueTimer issue={issue} duration={parseInt(issue.duration)} targetTime={'10m'} />
+      return (
+        <IssueTimer
+          issue={issue}
+          duration={issue.remainingTime}
+          targetTime={formatMilliseconds(issue.originalTime)}
+        />
+      )
     } else {
       return (
-        <Link to={`/editIssue/${issue.issueNumber}`}>
+        <Link to={`/editIssue/${issue.issue_number}`}>
           <div style={{ ...generateBackgroundColor(), display: 'flex', alignItems: 'center' }}>
             <img
               src={getIcon(issueStatusFile)}
@@ -179,18 +193,21 @@ const IssueComponent = ({
                   color: 'white',
                   fontSize: '16px',
                   fontWeight: 500,
-                  paddingBottom: '6px'
+                  paddingBottom: '6px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}
               >
-                {issue.issueName} #{issue.issueNumber}
+                {issue.issue_title} #{issue.issue_number}
               </div>
               <div
                 style={{
                   fontSize: '12px',
-                  color: 'white'
+                  color: 'white',
+                  fontWeight: '500'
                 }}
               >
-                {issue.duration}
+                {formatMillisecondsString(issue.originalTime)}
               </div>
             </div>
             <button onClick={onClickStartButton}>Hello there</button>
@@ -207,88 +224,5 @@ const IssueComponent = ({
 
   return renderView()
 }
-
-const issues = [
-  {
-    issueNumber: 1,
-    issueName: 'Add user authentication',
-    duration: '2 days',
-    difficulty: 'Medium',
-    progress: 'Open',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/1'
-  },
-  {
-    issueNumber: 2,
-    issueName: 'Implement responsive design',
-    duration: '1 day',
-    difficulty: 'Easy',
-    progress: 'Closed',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/2'
-  },
-  {
-    issueNumber: 3,
-    issueName: 'Fix bug in data retrieval',
-    duration: '3 days',
-    difficulty: 'Hard',
-    progress: 'In Progress',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/3'
-  },
-  {
-    issueNumber: 4,
-    issueName: 'Refactor codebase',
-    duration: '4 days',
-    difficulty: 'Medium',
-    progress: 'Open',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/4'
-  },
-  {
-    issueNumber: 5,
-    issueName: 'Optimize database queries',
-    duration: '2 days',
-    difficulty: 'Medium',
-    progress: 'In Progress',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/5'
-  },
-  {
-    issueNumber: 6,
-    issueName: 'Add unit tests',
-    duration: '1 day',
-    difficulty: 'Easy',
-    progress: 'Closed',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/6'
-  },
-  {
-    issueNumber: 3,
-    issueName: 'Fix bug in data retrieval',
-    duration: '3 days',
-    difficulty: 'Hard',
-    progress: 'In Progress',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/3'
-  },
-  {
-    issueNumber: 4,
-    issueName: 'Refactor codebase',
-    duration: '4 days',
-    difficulty: 'Medium',
-    progress: 'Open',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/4'
-  },
-  {
-    issueNumber: 5,
-    issueName: 'Optimize database queries',
-    duration: '2 days',
-    difficulty: 'Medium',
-    progress: 'In Progress',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/5'
-  },
-  {
-    issueNumber: 6,
-    issueName: 'Add unit tests',
-    duration: '1 day',
-    difficulty: 'Easy',
-    progress: 'Closed',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/6'
-  }
-]
 
 export default Home
