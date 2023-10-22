@@ -38,9 +38,42 @@ const Home = () => {
     })
   }
 
+  // // useEffect(() => {
+  const fetchIssues = async () => {
+    // const url = 'https://c038-172-58-219-55.ngrok-free.app/get_issues'
+    const url = 'http://localhost:3000/get_issues'
+
+    try {
+      // Fetching data from the server
+      const response = await fetch(url, {
+        method: 'GET', // Making an external GET request to fetch issues
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      // console.log('response is', response)
+      const data = await response.text()
+      console.log('data is', data)
+
+      if (response.ok) {
+        // Update state with the issues
+        // setIssues(data)
+      } else {
+        console.error('Server response was not ok.')
+      }
+    } catch (error) {
+      console.error('Fetching data failed', error)
+    }
+  }
+
+  // // fetchIssues()
+  // // }, []) // Empty dependency array means this useEffect runs once when the component mounts
+
   return (
     <div>
-      <div
+      <button onClick={fetchIssues}>Fetch Issues</button>
+      {/* <div
         style={{
           position: 'absolute',
           top: 0,
@@ -51,7 +84,7 @@ const Home = () => {
         }}
       >
         {generateIssueList()}
-      </div>
+      </div> */}
       <Navbar />
     </div>
   )
@@ -160,6 +193,7 @@ const IssueComponent = ({
               </div>
             </div>
             <button onClick={onClickStartButton}>Hello there</button>
+
             {/* {isClickedContainer && <Navigate to={`/editIssue/${issue.issueNumber}`} />}) */}
             {/* <div>
         <img src="./assets/icon/playPause/play.svg" alt="Play" />
