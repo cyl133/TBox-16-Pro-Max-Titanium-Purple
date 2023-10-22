@@ -43,7 +43,7 @@ const Home = () => {
           left: 0,
           width: '100%',
           overflow: 'auto',
-          flex: 1
+          height: '740px'
         }}
       >
         {generateIssueList()}

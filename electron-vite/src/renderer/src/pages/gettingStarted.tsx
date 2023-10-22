@@ -14,7 +14,7 @@ type EditTimeComponentProps = {
   color: string
 }
 
-export const EditTimeComponent = ({
+const EditTimeComponent = ({
   title,
   color,
   days,
@@ -91,7 +91,7 @@ export const EditTimeComponent = ({
   )
 }
 
-const CheckInTimeComponent = ({ minutes, setMinutes }) => {
+export const CheckInTimeComponent = ({ minutes, setMinutes }) => {
   return (
     <div
       style={{
@@ -123,7 +123,7 @@ const CheckInTimeComponent = ({ minutes, setMinutes }) => {
   )
 }
 
-const GettingStarted = (): ReactNode => {
+const GettingStarted = (): JSX.Element => {
   const [easyTicketDays, setEasyTicketDays] = useState(0)
   const [easyTicketHours, setEasyTicketHours] = useState(0)
   const [easyTicketMinutes, setEasyTicketMinutes] = useState(0)
