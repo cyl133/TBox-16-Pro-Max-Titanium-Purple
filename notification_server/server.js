@@ -7,11 +7,21 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
+import cors from 'cors';
+import {createProxyMiddleware} from 'http-proxy-middleware';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 
 dotenv.config();
 
 const app = express();
 const port = 3000;
+app.use(cors());
+app.options('*', cors()); // This would enable pre-flight for all resources. You can customize the path as needed.
 const owner = 'cyl133';
 const repo = 'HackHarvard2023';
 // Middleware to parse JSON payloads
@@ -19,6 +29,14 @@ app.use(express.json());
 
 
 app.use(bodyParser.json());
+
+app.use('/api', createProxyMiddleware({ 
+    target: 'https://c038-172-58-219-55.ngrok-free.app', // the server you want to proxy to
+    changeOrigin: true,
+    pathRewrite: {
+      '^/api': '', // if necessary, rewrite paths; here, we remove /api
+    },
+  }));
 
 let checkinTimer = null;
 let checkinInterval = 1000 * 10; // e.g., 10 seconds
@@ -237,33 +255,36 @@ app.get('/get_issues', (req, res) => {
     res.json(responseIssues);
 });
 
-app.post('/add_issue', (req, res) => {
-    const { issue_title, issue_number, issue_state } = req.body;
+app.post('/add_issue', async (req, res) => {
+    // It looks like you want to fetch issues from another server when this endpoint is hit
+    try {
+        const response = await fetch('https://c038-172-58-219-55.ngrok-free.app/get_issues', {
+            method: 'GET', // Making an external GET request to fetch issues
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
 
-    if (!issue_title || issue_number == null || !issue_state) {
-        return res.status(400).send('Missing required issue information');
+        // Assuming the server responds with JSON
+        const issues = await response.json();
+
+        // Check if the response is successful
+        if (response.ok) {
+            // Here, you might want to do something with the issues before sending them back
+            // For this example, we'll just send them back in the response
+            res.json(issues);
+        } else {
+            res.status(500).send('Error fetching issues from external server');
+        }
+    } catch (error) {
+        res.status(500).send('An error occurred');
+        console.error('Error fetching issues:', error);
     }
-
-    const newIssue = {
-        issue_title,
-        issue_number,
-        issue_state,
-        startTime: null,
-        originalTime: 1000 * 60 * 5, // Defaulting to 5 minutes
-        remainingTime: 1000 * 60 * 5, // Defaulting to 5 minutes
-        timer: null,
-        is_timer_on: false,  
-    };
-
-    issues.push(newIssue);
-    res.status(201).send('Issue added successfully');
 });
 
-// Define a route that receives the POST requests
 app.post('/confirm_issue_data', async (req, res) => {
-    const { title, description, stress, difficulty } = req.body; // extract other information as needed
-    // Define your CSV file path
-    const filePath = path.join(__dirname, 'utils/user_history.csv');
+    const { title, description, stress, difficulty } = req.body;
+    const filePath = "../utils/user_history.csv";
 
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
@@ -272,7 +293,7 @@ app.post('/confirm_issue_data', async (req, res) => {
         }
 
         // Split the CSV file into lines
-        let lines = data.split('\n');
+        let lines = data.trim().split('\n'); // 'trim()' will remove unnecessary whitespace or new lines.
 
         // Remove the first line (header)
         lines.shift();
@@ -280,10 +301,16 @@ app.post('/confirm_issue_data', async (req, res) => {
         // Prepare the new line to be added
         const newIssue = `"${title}","${description}","${stress}","${difficulty}"`;
 
-        // Add the new issue at the end of the array
-        lines.push(newIssue);
+        // Check if the last line is empty, and if so, replace it instead of adding a new line
+        if (lines[lines.length - 1] === '') {
+            lines[lines.length - 1] = newIssue;
+        } else {
+            // Add the new issue at the end of the array
+            lines.push(newIssue);
+        }
 
         // Prepare data to be written to the CSV, turning the array back into a string
+        // Ensure it doesn't end with a newline to avoid creating an empty line
         const updatedData = lines.join('\n');
 
         fs.writeFile(filePath, updatedData, 'utf8', (writeErr) => {

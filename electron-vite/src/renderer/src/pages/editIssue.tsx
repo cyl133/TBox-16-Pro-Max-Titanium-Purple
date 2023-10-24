@@ -1,9 +1,13 @@
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { EditTimeComponent } from './gettingStarted'
 import { useEffect, useState } from 'react'
 import Navbar from '@renderer/components/Navbar'
 import { IssueComponent, IssueType } from './home'
-import { issues_data } from '@renderer/constants'
+import { getTimeComponents, issues_data } from '@renderer/constants'
+import backIcon from '../assets/playPause/back.svg'
+import nextIcon from '../assets/playPause/complete.svg'
+import { DifficultyComponentRow } from '@renderer/components/DifficultyComponentRow'
+import { DifficultyEnum } from '@renderer/types/types'
 
 const PADDING_HORIZONTAL = '50px'
 const PADDING_VERTICAL = '29px'
@@ -12,19 +16,37 @@ const EditIssue = () => {
   const { issueNumber } = useParams()
   const [issues, setIssues] = useState<IssueType[]>()
   const issue = issues?.find((item: IssueType) => item.issue_number === parseInt(issueNumber))
-  const [difficultySelected, setDifficultySelected] = useState(issue?.difficulty || 'Easy')
+  const [difficultySelected, setDifficultySelected] = useState<DifficultyEnum | undefined>(
+    issue?.difficulty || DifficultyEnum.EASY
+  )
   const [isSuccess, setSuccess] = useState(false)
   const navigate = useNavigate()
   const goBack = () => {
     navigate(-1)
   }
 
-  const [days, setDays] = useState(0)
-  const [hours, setHours] = useState(0)
-  const [minutes, setMinutes] = useState(0)
-  const [seconds, setSeconds] = useState(0)
+  const [days, setDays] = useState(getTimeComponents(issue?.originalTime).days || 0)
+  const [hours, setHours] = useState(getTimeComponents(issue?.originalTime).hours || 0)
+  const [minutes, setMinutes] = useState(getTimeComponents(issue?.originalTime).minutes || 0)
+  const [seconds, setSeconds] = useState(getTimeComponents(issue?.originalTime).seconds || 0)
 
-  const onPressDifficulty = (difficulty: string) => {
+  console.log('button difficulty is', issue?.difficulty)
+
+  console.log('original time is', issue?.originalTime)
+  console.log(getTimeComponents(issue?.originalTime).seconds)
+
+  useEffect(() => {
+    setDays(getTimeComponents(issue?.originalTime).days || 0)
+    setHours(getTimeComponents(issue?.originalTime).hours || 0)
+    setMinutes(getTimeComponents(issue?.originalTime).minutes || 0)
+    setSeconds(getTimeComponents(issue?.originalTime).seconds || 0)
+  }, [issue])
+
+  useEffect(() => {
+    setDifficultySelected(issue?.difficulty)
+  }, [issue?.difficulty])
+
+  const onPressDifficulty = (difficulty: DifficultyEnum): void => {
     setDifficultySelected(difficulty)
   }
 
@@ -60,13 +82,12 @@ const EditIssue = () => {
     }
 
     fetchIssues().then(() => generateIssueList())
-  }, []) // Empty dependency array means this useEffect runs once when the component mounts
+  }, [issue]) // Empty dependency array means this useEffect runs once when the component mounts
 
   const generateIssueList = () => {
-    console.log('issues', issues)
     return issues?.map((issue, counter) => {
       const difficultyClass =
-        issue.difficulty === 'Easy' ? 'easy' : issue.difficulty === 'Medium' ? 'medium' : 'hard'
+        issue.difficulty === 'easy' ? 'easy' : issue.difficulty === 'medium' ? 'medium' : 'hard'
       const issueStatusFile =
         issue.is_timer_on && issue.issue_state.toLowerCase() === 'open'
           ? 'inProgress'
@@ -93,23 +114,23 @@ const EditIssue = () => {
 
   const getStyle = () => {
     const style = {
-      height: '300px',
+      height: '250px',
       position: 'relative',
       // width: '100%',
       padding: `${PADDING_VERTICAL} ${PADDING_HORIZONTAL} ${PADDING_VERTICAL} ${PADDING_HORIZONTAL}`
     }
     switch (issue?.difficulty) {
-      case 'Easy':
+      case 'easy':
         return {
           ...style,
           backgroundColor: '#7CADB9'
         }
-      case 'Medium':
+      case 'medium':
         return {
           ...style,
           backgroundColor: '#FC9E35'
         }
-      case 'Hard':
+      case 'hard':
         return {
           ...style,
           backgroundColor: '#E15566'
@@ -125,8 +146,18 @@ const EditIssue = () => {
   return (
     <div>
       <div style={getStyle()}>
-        <button onClick={goBack}>
-          <img src="back.svg" alt="Back" />
+        <button
+          onClick={goBack}
+          style={{
+            position: 'absolute',
+            top: '41px',
+            left: '45px',
+            border: 'none',
+            backgroundColor: 'transparent',
+            cursor: 'pointer'
+          }}
+        >
+          <img src={backIcon} alt="Back" />
         </button>
         <div
           style={{
@@ -163,8 +194,18 @@ const EditIssue = () => {
           onPressDifficulty={onPressDifficulty}
         />
         {isSuccess && <Navigate to="/home" replace={true} />}
-        <button onClick={onClick}>
-          <img src="next.svg" alt="Next" />
+        <button
+          onClick={onClick}
+          style={{
+            position: 'absolute',
+            bottom: '106px',
+            right: '57px',
+            border: 'none',
+            backgroundColor: 'transparent',
+            cursor: 'pointer'
+          }}
+        >
+          <img src={nextIcon} alt="Next" />
         </button>
       </div>
       <Navbar />
@@ -172,56 +213,13 @@ const EditIssue = () => {
   )
 }
 
-const DifficultyComponent = ({ difficultySelected, onPressDifficulty }) => {
-  const getButtonStyle = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Easy':
-        return '#7CADB9'
-      case 'Medium':
-        return '#FC9E35'
-      case 'Hard':
-        return '#E15566'
-    }
-  }
-
-  const getButtons = (buttonColor: string, onPressDifficulty: (difficulty: string) => void) => {
-    const getTypeOfStyle = (difficulty: string) => {
-      const style = {
-        borderRadius: '5px',
-        marginRight: '10px',
-        width: '80px',
-        height: '30px',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignContent: 'center'
-      }
-
-      if (difficultySelected === buttonColor) {
-        return {
-          ...style,
-          border: `1px solid ${getButtonStyle(difficulty)}`,
-          // borderColor: getButtonStyle(difficulty),
-          backgroundColor: getButtonStyle(difficulty),
-          color: 'white'
-        }
-      } else {
-        return {
-          ...style,
-          // border: '1px',
-          // borderColor: getButtonStyle(difficulty),
-          border: `1px solid ${getButtonStyle(difficulty)}`,
-          color: getButtonStyle(difficulty)
-        }
-      }
-    }
-
-    return (
-      <div style={getTypeOfStyle(buttonColor)} onClick={() => onPressDifficulty(buttonColor)}>
-        {buttonColor}
-      </div>
-    )
-  }
-
+const DifficultyComponent = ({
+  difficultySelected,
+  onPressDifficulty
+}: {
+  difficultySelected: DifficultyEnum
+  onPressDifficulty: (difficulty: DifficultyEnum) => void
+}) => {
   return (
     <div
       style={{
@@ -238,101 +236,8 @@ const DifficultyComponent = ({ difficultySelected, onPressDifficulty }) => {
       >
         DIFFICULTY (RECOMMENDED BY AI)
       </div>
-      <div
-        style={{
-          flexDirection: 'row',
-          flex: 1,
-          display: 'flex'
-        }}
-      >
-        {getButtons('Easy', onPressDifficulty)}
-        {getButtons('Medium', onPressDifficulty)}
-        {getButtons('Hard', onPressDifficulty)}
-      </div>
+      <DifficultyComponentRow difficultySelected={difficultySelected} onClick={onPressDifficulty} />
     </div>
   )
 }
-
-const issues = [
-  {
-    issueNumber: 1,
-    issueName: 'Add user authentication',
-    duration: '2 days',
-    difficulty: 'Medium',
-    progress: 'Open',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/1'
-  },
-  {
-    issueNumber: 2,
-    issueName: 'Implement responsive design',
-    duration: '1 day',
-    difficulty: 'Easy',
-    progress: 'Closed',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/2'
-  },
-  {
-    issueNumber: 3,
-    issueName: 'Fix bug in data retrieval',
-    duration: '3 days',
-    difficulty: 'Hard',
-    progress: 'In Progress',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/3'
-  },
-  {
-    issueNumber: 4,
-    issueName: 'Refactor codebase',
-    duration: '4 days',
-    difficulty: 'Medium',
-    progress: 'Open',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/4'
-  },
-  {
-    issueNumber: 5,
-    issueName: 'Optimize database queries',
-    duration: '2 days',
-    difficulty: 'Medium',
-    progress: 'In Progress',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/5'
-  },
-  {
-    issueNumber: 6,
-    issueName: 'Add unit tests',
-    duration: '1 day',
-    difficulty: 'Easy',
-    progress: 'Closed',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/6'
-  },
-  {
-    issueNumber: 3,
-    issueName: 'Fix bug in data retrieval',
-    duration: '3 days',
-    difficulty: 'Hard',
-    progress: 'In Progress',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/3'
-  },
-  {
-    issueNumber: 4,
-    issueName: 'Refactor codebase',
-    duration: '4 days',
-    difficulty: 'Medium',
-    progress: 'Open',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/4'
-  },
-  {
-    issueNumber: 5,
-    issueName: 'Optimize database queries',
-    duration: '2 days',
-    difficulty: 'Medium',
-    progress: 'In Progress',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/5'
-  },
-  {
-    issueNumber: 6,
-    issueName: 'Add unit tests',
-    duration: '1 day',
-    difficulty: 'Easy',
-    progress: 'Closed',
-    githubIssue: 'https://github.com/your-repo/your-project/issues/6'
-  }
-]
 export default EditIssue

@@ -6,6 +6,7 @@ import completedIcon from '../assets/issueStatus/completed.svg'
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { formatMilliseconds, formatMillisecondsString, issues_data } from '@renderer/constants'
+import playIcon from '../assets/playPause/play.svg'
 
 export type IssueType = {
   issue_title: string
@@ -210,7 +211,18 @@ export const IssueComponent = ({
                 {formatMillisecondsString(issue.originalTime)}
               </div>
             </div>
-            <button onClick={onClickStartButton}>Hello there</button>
+            <button
+              onClick={onClickStartButton}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer'
+              }}
+            >
+              <img src={playIcon} alt="Next" />
+            </button>
 
             {/* {isClickedContainer && <Navigate to={`/editIssue/${issue.issueNumber}`} />}) */}
             {/* <div>
