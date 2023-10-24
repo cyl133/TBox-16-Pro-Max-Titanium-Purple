@@ -1,4 +1,5 @@
 import { IssueType } from './pages/home'
+import { DifficultyEnum } from './types/types'
 
 export function formatMillisecondsString(milliseconds: number): string {
   if (milliseconds < 0) {
@@ -37,10 +38,10 @@ export function formatMilliseconds(milliseconds: number): string {
     return 'Invalid time' // Handle negative values, if needed
   }
 
-  const seconds = Math.floor((milliseconds / 1000) % 60)
-  const minutes = Math.floor((milliseconds / (1000 * 60)) % 60)
-  const hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24)
-  const days = Math.floor(milliseconds / (1000 * 60 * 60 * 24))
+  const seconds = Math.floor((milliseconds / 1) % 60)
+  const minutes = Math.floor((milliseconds / (1 * 60)) % 60)
+  const hours = Math.floor((milliseconds / (1 * 60 * 60)) % 24)
+  const days = Math.floor(milliseconds / (1 * 60 * 60 * 24))
 
   const formattedDays = days.toString().padStart(2, '0')
   const formattedHours = hours.toString().padStart(2, '0')
@@ -56,8 +57,8 @@ export const issues_data: IssueType[] = [
     issue_number: 38,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 20000,
-    remainingTime: 10000,
+    originalTime: 20,
+    remainingTime: 20,
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -68,8 +69,8 @@ export const issues_data: IssueType[] = [
     issue_number: 37,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 10000,
-    remainingTime: 20000,
+    originalTime: 20,
+    remainingTime: 20,
     startTime: null,
     is_confirmed: false,
     difficulty: 'easy',
@@ -80,8 +81,8 @@ export const issues_data: IssueType[] = [
     issue_number: 36,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 30000,
-    remainingTime: 15000,
+    originalTime: 5,
+    remainingTime: 5,
     startTime: null,
     is_confirmed: false,
     difficulty: 'hard',
@@ -92,8 +93,8 @@ export const issues_data: IssueType[] = [
     issue_number: 35,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 15000,
-    remainingTime: 30000,
+    originalTime: 5,
+    remainingTime: 5,
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -104,8 +105,8 @@ export const issues_data: IssueType[] = [
     issue_number: 34,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 25000,
-    remainingTime: 25000,
+    originalTime: 25,
+    remainingTime: 25,
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -116,8 +117,8 @@ export const issues_data: IssueType[] = [
     issue_number: 33,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 35000,
-    remainingTime: 35000,
+    originalTime: 35,
+    remainingTime: 35,
     startTime: null,
     is_confirmed: false,
     difficulty: 'hard',
@@ -128,8 +129,8 @@ export const issues_data: IssueType[] = [
     issue_number: 32,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 45000,
-    remainingTime: 45000,
+    originalTime: 45,
+    remainingTime: 45,
     startTime: null,
     is_confirmed: false,
     difficulty: 'easy',
@@ -140,8 +141,8 @@ export const issues_data: IssueType[] = [
     issue_number: 31,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 55000,
-    remainingTime: 55000,
+    originalTime: 5,
+    remainingTime: 5,
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -149,11 +150,11 @@ export const issues_data: IssueType[] = [
   },
   {
     issue_title: 'Optimize database queries for faster performance',
-    issue_number: 30,
+    issue_number: 5,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 65000,
-    remainingTime: 65000,
+    originalTime: 5,
+    remainingTime: 5,
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -164,8 +165,8 @@ export const issues_data: IssueType[] = [
     issue_number: 29,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 75000,
-    remainingTime: 75000,
+    originalTime: 75,
+    remainingTime: 75,
     startTime: null,
     is_confirmed: false,
     difficulty: 'hard',
@@ -176,11 +177,36 @@ export const issues_data: IssueType[] = [
     issue_number: 28,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 85000,
-    remainingTime: 85000,
+    originalTime: 85,
+    remainingTime: 85,
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
     stressLevel: 'medium'
   }
 ]
+
+export function getTimeComponents(milliseconds) {
+  const seconds = Math.floor((milliseconds / 1) % 60)
+  const minutes = Math.floor((milliseconds / (1 * 60)) % 60)
+  const hours = Math.floor((milliseconds / (1 * 60 * 60)) % 24)
+  const days = Math.floor(milliseconds / (1 * 60 * 60 * 24))
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds
+  }
+}
+
+export const getButtonColorFromDifficulty = (difficulty: DifficultyEnum): string => {
+  switch (difficulty) {
+    case DifficultyEnum.EASY:
+      return '#7CADB9'
+    case DifficultyEnum.MEDIUM:
+      return '#FC9E35'
+    case DifficultyEnum.HARD:
+      return '#E15566'
+  }
+}

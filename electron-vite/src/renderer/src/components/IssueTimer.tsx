@@ -1,6 +1,7 @@
 import { IssueType } from '@renderer/pages/home'
 import pauseIcon from '../assets/playPause/pause.svg'
 import completeIcon from '../assets/playPause/complete.svg'
+import playIcon from '../assets/playPause/play-big.svg'
 import { useEffect, useState } from 'react'
 import { showNotification } from './notification'
 import { formatMilliseconds } from '@renderer/constants'
@@ -16,6 +17,7 @@ const IssueTimer = ({
 }) => {
   const [seconds, setSeconds] = useState(duration)
   const [isRunning, setIsRunning] = useState(true)
+  const [timerRepresentation, setTimer] = useState(formatMilliseconds(duration))
 
   const getButtonStyle = (difficulty: string) => {
     switch (difficulty) {
@@ -30,8 +32,8 @@ const IssueTimer = ({
     }
   }
 
-  const stopTimer = () => {
-    setIsRunning(false)
+  const toggletTimer = () => {
+    setIsRunning(!isRunning)
   }
 
   const completeTimer = () => {}
@@ -42,16 +44,18 @@ const IssueTimer = ({
     if (isRunning && seconds > 0) {
       interval = setInterval(() => {
         setSeconds((prevSeconds) => prevSeconds - 1)
+        // setTimer(() => formatMilliseconds(seconds))
       }, 1000)
     }
 
     if (seconds === 0) {
-      // Timer has reached zero, add your action here
       showNotification()
-      clearInterval(interval) // Stop the timer
+      setIsRunning(false) // Add this condition
     }
 
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+    }
   }, [isRunning, seconds])
 
   return (
@@ -79,7 +83,7 @@ const IssueTimer = ({
           marginBottom: '40px'
         }}
       >
-        {formatMilliseconds(seconds)}
+        {seconds} seconds
       </div>
       <div
         style={{
@@ -101,7 +105,11 @@ const IssueTimer = ({
           display: 'flex'
         }}
       >
-        <ButtonComponent onClick={stopTimer} component={pauseIcon} text={'PAUSE'} />
+        <ButtonComponent
+          onClick={toggletTimer}
+          component={isRunning ? pauseIcon : playIcon}
+          text={isRunning ? 'PAUSE' : 'PLAY'}
+        />
         <ButtonComponent onClick={completeTimer} component={completeIcon} text={'COMPLETE'} />
       </div>
     </div>

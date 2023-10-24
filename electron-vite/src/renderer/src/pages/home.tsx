@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { formatMilliseconds, formatMillisecondsString, issues_data } from '@renderer/constants'
 import playIcon from '../assets/playPause/play.svg'
+import { DifficultyEnum } from '@renderer/types/types'
 
 export type IssueType = {
   issue_title: string
@@ -17,7 +18,7 @@ export type IssueType = {
   remainingTime: number // miliseconds
   startTime: Date | null
   is_confirmed: boolean
-  difficulty: string
+  difficulty: DifficultyEnum
   stressLevel: string
 }
 
@@ -158,6 +159,7 @@ export const IssueComponent = ({
     if (isTimerStarted) {
       return (
         <IssueTimer
+          // setStartItem={() => {}}
           issue={issue}
           duration={issue.remainingTime}
           targetTime={formatMilliseconds(issue.originalTime)}
