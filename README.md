@@ -2,7 +2,7 @@
 
 https://github.com/cyl133/TBox-16-Pro-Max-Titanium-Purple/assets/50956270/d5dbb09a-d580-4cda-a41f-feddc1b4e7fb
 
- Inspiration
+# Inspiration
 As software engineers, we constantly seek ways to optimize efficiency and productivity. While we thrive on tackling challenging problems, sometimes we need assistance or a nudge to remember that support is available. Our app assists engineers by monitoring their states and employs Machine Learning to predict their efficiency in resolving issues.
 
 # What it does
