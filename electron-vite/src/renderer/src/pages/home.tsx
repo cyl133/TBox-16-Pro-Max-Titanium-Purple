@@ -210,7 +210,7 @@ export const IssueComponent = ({
                   fontWeight: '500'
                 }}
               >
-                {formatMillisecondsString(issue.originalTime)}
+                {issue.originalTime} seconds
               </div>
             </div>
             <button

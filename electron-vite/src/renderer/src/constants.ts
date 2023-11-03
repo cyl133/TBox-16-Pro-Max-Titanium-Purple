@@ -26,6 +26,8 @@ export function formatMillisecondsString(milliseconds: number): string {
     parts.push(`${seconds} second${seconds > 1 ? 's' : ''}`)
   }
 
+  console.log('parts is', parts)
+
   if (parts.length === 0) {
     return '0 seconds'
   }
