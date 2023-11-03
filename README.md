@@ -3,7 +3,7 @@
 https://github.com/cyl133/TBox-16-Pro-Max-Titanium-Purple/assets/50956270/d5dbb09a-d580-4cda-a41f-feddc1b4e7fb
 
 # Inspiration
-As software engineers, we constantly seek ways to optimize efficiency and productivity. While we thrive on tackling challenging problems, sometimes we need assistance or a nudge to remember that support is available. Our app assists engineers by monitoring their states and employs Machine Learning to predict their efficiency in resolving issues.
+As software engineers, we constantly seek ways to optimize efficiency and productivity. While we thrive on tackling challenging problems, sometimes we need assistance or a nudge to remember that support is available. Our app assists engineers by applying the concept of Time Boxing to an application and providing notifications when a task is done or when the program detects that the user is stuck. It also employs Machine Learning to predict their efficiency in resolving issues.
 
 # What it does
 Our app leverages LLMs to predict the complexity of GitHub issues based on their title, description, and the stress level of the assigned software engineer. To gauge the stress level, we utilize a machine learning model that examines the developer’s sleep patterns, sourced from TerraAPI. The app provides task completion time estimates and periodically checks in with the developer, suggesting when to seek help. All this is integrated into a visually appealing and responsive front-end that fits effortlessly into a developer's routine.
