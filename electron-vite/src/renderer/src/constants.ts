@@ -59,8 +59,8 @@ export const issues_data: IssueType[] = [
     issue_number: 38,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 20,
-    remainingTime: 20,
+    originalTime: 15, // Updated from 20 to 15 for 'medium'
+    remainingTime: 15, // Updated from 20 to 15 for 'medium'
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -71,8 +71,8 @@ export const issues_data: IssueType[] = [
     issue_number: 37,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 20,
-    remainingTime: 20,
+    originalTime: 5, // Updated from 20 to 5 for 'easy'
+    remainingTime: 5, // Updated from 20 to 5 for 'easy'
     startTime: null,
     is_confirmed: false,
     difficulty: 'easy',
@@ -83,8 +83,8 @@ export const issues_data: IssueType[] = [
     issue_number: 36,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 5,
-    remainingTime: 5,
+    originalTime: 25, // Updated from 5 to 25 for 'hard'
+    remainingTime: 25, // Updated from 5 to 25 for 'hard'
     startTime: null,
     is_confirmed: false,
     difficulty: 'hard',
@@ -95,8 +95,8 @@ export const issues_data: IssueType[] = [
     issue_number: 35,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 5,
-    remainingTime: 5,
+    originalTime: 15, // Updated from 5 to 15 for 'medium'
+    remainingTime: 15, // Updated from 5 to 15 for 'medium'
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -107,8 +107,8 @@ export const issues_data: IssueType[] = [
     issue_number: 34,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 25,
-    remainingTime: 25,
+    originalTime: 15, // Updated from 25 to 15 for 'medium'
+    remainingTime: 15, // Updated from 25 to 15 for 'medium'
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -119,8 +119,8 @@ export const issues_data: IssueType[] = [
     issue_number: 33,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 35,
-    remainingTime: 35,
+    originalTime: 25, // Updated from 35 to 25 for 'hard'
+    remainingTime: 25, // Updated from 35 to 25 for 'hard'
     startTime: null,
     is_confirmed: false,
     difficulty: 'hard',
@@ -131,8 +131,8 @@ export const issues_data: IssueType[] = [
     issue_number: 32,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 45,
-    remainingTime: 45,
+    originalTime: 5, // Updated from 45 to 5 for 'easy'
+    remainingTime: 5, // Updated from 45 to 5 for 'easy'
     startTime: null,
     is_confirmed: false,
     difficulty: 'easy',
@@ -143,8 +143,8 @@ export const issues_data: IssueType[] = [
     issue_number: 31,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 5,
-    remainingTime: 5,
+    originalTime: 15, // Updated from 5 to 15 for 'medium'
+    remainingTime: 15, // Updated from 5 to 15 for 'medium'
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -155,8 +155,8 @@ export const issues_data: IssueType[] = [
     issue_number: 5,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 5,
-    remainingTime: 5,
+    originalTime: 15, // Updated from 5 to 15 for 'medium'
+    remainingTime: 15, // Updated from 5 to 15 for 'medium'
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
@@ -167,8 +167,8 @@ export const issues_data: IssueType[] = [
     issue_number: 29,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 75,
-    remainingTime: 75,
+    originalTime: 25, // Updated from 75 to 25 for 'hard'
+    remainingTime: 25, // Updated from 75 to 25 for 'hard'
     startTime: null,
     is_confirmed: false,
     difficulty: 'hard',
@@ -179,8 +179,8 @@ export const issues_data: IssueType[] = [
     issue_number: 28,
     issue_state: 'open',
     is_timer_on: false,
-    originalTime: 85,
-    remainingTime: 85,
+    originalTime: 15, // Updated from 85 to 15 for 'medium'
+    remainingTime: 15, // Updated from 85 to 15 for 'medium'
     startTime: null,
     is_confirmed: false,
     difficulty: 'medium',
